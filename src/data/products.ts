@@ -1,0 +1,234 @@
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  category: string;
+  description: string;
+  images: string[];
+  colors: { name: string; hex: string }[];
+  sizes: string[];
+  tags: string[];
+  isNew?: boolean;
+  isBestSeller?: boolean;
+}
+
+export const products: Product[] = [
+  {
+    id: "1",
+    name: "Sovereign Hoodie",
+    price: 285,
+    originalPrice: 350,
+    category: "Hoodies",
+    description: "Premium heavyweight cotton hoodie with gold-embroidered logo. Features a relaxed silhouette, kangaroo pocket, and ribbed cuffs. The epitome of luxury streetwear.",
+    images: [
+      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=800&auto=format&fit=crop"
+    ],
+    colors: [
+      { name: "Obsidian", hex: "#0A0A0A" },
+      { name: "Ivory", hex: "#FAFAFA" },
+      { name: "Charcoal", hex: "#2D2D2D" }
+    ],
+    sizes: ["S", "M", "L", "XL", "XXL"],
+    tags: ["bestseller", "limited"],
+    isNew: true,
+    isBestSeller: true
+  },
+  {
+    id: "2",
+    name: "Empire Tee",
+    price: 125,
+    category: "T-Shirts",
+    description: "100% Egyptian cotton tee with subtle metallic print. Oversized fit with dropped shoulders. Luxury meets street in this essential piece.",
+    images: [
+      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&auto=format&fit=crop"
+    ],
+    colors: [
+      { name: "Black", hex: "#0A0A0A" },
+      { name: "White", hex: "#FFFFFF" },
+      { name: "Gold", hex: "#D4AF37" }
+    ],
+    sizes: ["XS", "S", "M", "L", "XL"],
+    tags: ["essential"],
+    isBestSeller: true
+  },
+  {
+    id: "3",
+    name: "Dynasty Bomber",
+    price: 495,
+    category: "Jackets",
+    description: "Satin bomber jacket with custom embroidered back panel. Premium YKK zippers, silk lining, and ribbed collar. A statement piece for the modern aristocrat.",
+    images: [
+      "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&auto=format&fit=crop"
+    ],
+    colors: [
+      { name: "Midnight", hex: "#0D1117" },
+      { name: "Olive", hex: "#3D4F2F" },
+      { name: "Burgundy", hex: "#722F37" }
+    ],
+    sizes: ["S", "M", "L", "XL"],
+    tags: ["limited", "exclusive"],
+    isNew: true
+  },
+  {
+    id: "4",
+    name: "Crown Joggers",
+    price: 195,
+    category: "Pants",
+    description: "Technical joggers with tapered fit and hidden zip pockets. Water-resistant fabric with four-way stretch. Comfort engineered for the streets.",
+    images: [
+      "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=800&auto=format&fit=crop"
+    ],
+    colors: [
+      { name: "Black", hex: "#0A0A0A" },
+      { name: "Grey", hex: "#4A4A4A" },
+      { name: "Navy", hex: "#1B2838" }
+    ],
+    sizes: ["S", "M", "L", "XL", "XXL"],
+    tags: ["essential", "comfort"]
+  },
+  {
+    id: "5",
+    name: "Reign Cap",
+    price: 85,
+    category: "Accessories",
+    description: "Structured six-panel cap with embroidered crown logo. Adjustable brass closure. Premium cotton twill construction.",
+    images: [
+      "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1534215754734-18e55d13e346?w=800&auto=format&fit=crop"
+    ],
+    colors: [
+      { name: "Black", hex: "#0A0A0A" },
+      { name: "White", hex: "#FFFFFF" },
+      { name: "Tan", hex: "#C4A77D" }
+    ],
+    sizes: ["One Size"],
+    tags: ["accessory"]
+  },
+  {
+    id: "6",
+    name: "Noble Crewneck",
+    price: 225,
+    category: "Sweaters",
+    description: "Heavy-weight French terry crewneck with chain-stitched logo. Vintage wash finish. The perfect layering piece for distinguished style.",
+    images: [
+      "https://images.unsplash.com/photo-1578587018452-892bacefd3f2?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&auto=format&fit=crop"
+    ],
+    colors: [
+      { name: "Heather Grey", hex: "#9CA3AF" },
+      { name: "Black", hex: "#0A0A0A" },
+      { name: "Cream", hex: "#FFFDD0" }
+    ],
+    sizes: ["S", "M", "L", "XL"],
+    tags: ["comfort", "essential"]
+  },
+  {
+    id: "7",
+    name: "Monarch Denim",
+    price: 325,
+    originalPrice: 400,
+    category: "Pants",
+    description: "Japanese selvedge denim with custom hardware. Relaxed straight fit. Hand-distressed details for authentic character.",
+    images: [
+      "https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=800&auto=format&fit=crop"
+    ],
+    colors: [
+      { name: "Indigo", hex: "#3F51B5" },
+      { name: "Washed Black", hex: "#2D2D2D" }
+    ],
+    sizes: ["28", "30", "32", "34", "36"],
+    tags: ["denim", "premium"],
+    isNew: true
+  },
+  {
+    id: "8",
+    name: "Scepter Bag",
+    price: 245,
+    category: "Accessories",
+    description: "Crossbody bag in full-grain leather with gold hardware. Multiple compartments with magnetic closure. Urban utility meets refined craftsmanship.",
+    images: [
+      "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&auto=format&fit=crop"
+    ],
+    colors: [
+      { name: "Black", hex: "#0A0A0A" },
+      { name: "Brown", hex: "#8B4513" }
+    ],
+    sizes: ["One Size"],
+    tags: ["accessory", "leather"],
+    isBestSeller: true
+  },
+  {
+    id: "9",
+    name: "Throne Puffer",
+    price: 595,
+    category: "Jackets",
+    description: "Down-filled puffer with matte finish. Detachable hood and inner pocket system. Warmth and style for the urban throne.",
+    images: [
+      "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=800&auto=format&fit=crop"
+    ],
+    colors: [
+      { name: "Matte Black", hex: "#1A1A1A" },
+      { name: "Olive", hex: "#556B2F" }
+    ],
+    sizes: ["S", "M", "L", "XL"],
+    tags: ["winter", "premium"],
+    isNew: true
+  },
+  {
+    id: "10",
+    name: "Legacy Shorts",
+    price: 145,
+    category: "Pants",
+    description: "Premium cotton shorts with embroidered logo. Elastic waist with drawstring. Above-knee cut for a modern silhouette.",
+    images: [
+      "https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=800&auto=format&fit=crop"
+    ],
+    colors: [
+      { name: "Black", hex: "#0A0A0A" },
+      { name: "Stone", hex: "#A0917D" },
+      { name: "Navy", hex: "#1B2838" }
+    ],
+    sizes: ["S", "M", "L", "XL"],
+    tags: ["summer", "essential"]
+  }
+];
+
+export const categories = [
+  "All",
+  "Hoodies",
+  "T-Shirts",
+  "Jackets",
+  "Pants",
+  "Sweaters",
+  "Accessories"
+];
+
+export const getProductById = (id: string): Product | undefined => {
+  return products.find(p => p.id === id);
+};
+
+export const getProductsByCategory = (category: string): Product[] => {
+  if (category === "All") return products;
+  return products.filter(p => p.category === category);
+};
+
+export const getFeaturedProducts = (): Product[] => {
+  return products.filter(p => p.isNew || p.isBestSeller).slice(0, 4);
+};
+
+export const getNewArrivals = (): Product[] => {
+  return products.filter(p => p.isNew);
+};
+
+export const getBestSellers = (): Product[] => {
+  return products.filter(p => p.isBestSeller);
+};
