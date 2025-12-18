@@ -1,12 +1,43 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState, useEffect } from 'react';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import CartDrawer from '@/components/CartDrawer';
+import LoadingScreen from '@/components/LoadingScreen';
+import HeroSection from '@/components/HeroSection';
+import FeaturedProducts from '@/components/FeaturedProducts';
+import CollectionBanner from '@/components/CollectionBanner';
+import LookbookSection from '@/components/LookbookSection';
+import SocialProof from '@/components/SocialProof';
+import Newsletter from '@/components/Newsletter';
 
 const Index = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const hasLoaded = sessionStorage.getItem('dapper-loaded');
+    if (hasLoaded) setIsLoading(false);
+  }, []);
+
+  const handleLoadingComplete = () => {
+    sessionStorage.setItem('dapper-loaded', 'true');
+    setIsLoading(false);
+  };
+
+  if (isLoading) return <LoadingScreen onComplete={handleLoadingComplete} />;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <CartDrawer />
+      <main>
+        <HeroSection />
+        <FeaturedProducts />
+        <CollectionBanner />
+        <LookbookSection />
+        <SocialProof />
+        <Newsletter />
+      </main>
+      <Footer />
     </div>
   );
 };
