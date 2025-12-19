@@ -10,6 +10,7 @@ import { getProductById } from '@/data/products';
 import { useCart } from '@/hooks/useCart';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { formatPrice } from '@/lib/currency';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -55,8 +56,8 @@ const ProductDetail = () => {
                 <p className="text-sm text-primary mb-2">{product.category}</p>
                 <h1 className="font-display text-3xl md:text-4xl font-bold mb-4">{product.name}</h1>
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl font-semibold">${product.price}</span>
-                  {product.originalPrice && <span className="text-lg text-muted-foreground line-through">${product.originalPrice}</span>}
+                  <span className="text-2xl font-semibold">{formatPrice(product.price)}</span>
+                  {product.originalPrice && <span className="text-lg text-muted-foreground line-through">{formatPrice(product.originalPrice)}</span>}
                 </div>
               </div>
               <p className="text-muted-foreground">{product.description}</p>

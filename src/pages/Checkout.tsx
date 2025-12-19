@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { formatPrice } from '@/lib/currency';
 
 const steps = [
   { id: 1, name: 'Shipping', icon: Truck },
@@ -183,7 +184,7 @@ const Checkout = () => {
                             <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                           </div>
                           <span className="font-semibold">
-                            ${(item.product.price * item.quantity).toFixed(2)}
+                            {formatPrice(item.product.price * item.quantity)}
                           </span>
                         </div>
                       ))}
@@ -231,7 +232,7 @@ const Checkout = () => {
                         <p className="text-xs text-muted-foreground">x{item.quantity}</p>
                       </div>
                       <span className="text-sm font-medium">
-                        ${(item.product.price * item.quantity).toFixed(2)}
+                        {formatPrice(item.product.price * item.quantity)}
                       </span>
                     </div>
                   ))}
@@ -243,19 +244,19 @@ const Checkout = () => {
                 <div className="border-t border-border pt-4 space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span>${totalPrice.toFixed(2)}</span>
+                    <span>{formatPrice(totalPrice)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Shipping</span>
-                    <span>${shipping.toFixed(2)}</span>
+                    <span>{formatPrice(shipping)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Tax</span>
-                    <span>${tax.toFixed(2)}</span>
+                    <span>{formatPrice(tax)}</span>
                   </div>
                   <div className="flex justify-between text-lg font-bold pt-3 border-t border-border">
                     <span>Total</span>
-                    <span className="text-gradient-gold">${total.toFixed(2)}</span>
+                    <span className="text-gradient-gold">{formatPrice(total)}</span>
                   </div>
                 </div>
               </div>
