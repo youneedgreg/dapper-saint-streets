@@ -17,6 +17,7 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// App component with all providers
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <CartProvider>
