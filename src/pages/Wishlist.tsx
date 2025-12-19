@@ -7,6 +7,7 @@ import CartDrawer from '@/components/CartDrawer';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useCart } from '@/hooks/useCart';
 import { Button } from '@/components/ui/button';
+import { formatPrice } from '@/lib/currency';
 
 const Wishlist = () => {
   const { items, removeFromWishlist } = useWishlist();
@@ -87,10 +88,10 @@ const Wishlist = () => {
                     </Link>
                     <p className="text-sm text-muted-foreground mb-2">{product.category}</p>
                     <div className="flex items-center gap-2 mb-4">
-                      <span className="font-semibold">${product.price}</span>
+                      <span className="font-semibold">{formatPrice(product.price)}</span>
                       {product.originalPrice && (
                         <span className="text-sm text-muted-foreground line-through">
-                          ${product.originalPrice}
+                          {formatPrice(product.originalPrice)}
                         </span>
                       )}
                     </div>

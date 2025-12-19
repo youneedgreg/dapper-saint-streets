@@ -21,6 +21,7 @@ import { products } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { formatPrice } from '@/lib/currency';
 import { 
   Table, 
   TableBody, 
@@ -40,18 +41,18 @@ const sidebarLinks = [
 ];
 
 const mockOrders = [
-  { id: '#1001', customer: 'John Doe', date: '2024-01-15', total: 485, status: 'Completed' },
-  { id: '#1002', customer: 'Jane Smith', date: '2024-01-15', total: 285, status: 'Processing' },
-  { id: '#1003', customer: 'Mike Johnson', date: '2024-01-14', total: 745, status: 'Shipped' },
-  { id: '#1004', customer: 'Sarah Wilson', date: '2024-01-14', total: 195, status: 'Pending' },
-  { id: '#1005', customer: 'Chris Brown', date: '2024-01-13', total: 595, status: 'Completed' },
+  { id: '#1001', customer: 'John Doe', date: '2024-01-15', total: 48500, status: 'Completed' },
+  { id: '#1002', customer: 'Jane Smith', date: '2024-01-15', total: 28500, status: 'Processing' },
+  { id: '#1003', customer: 'Mike Johnson', date: '2024-01-14', total: 74500, status: 'Shipped' },
+  { id: '#1004', customer: 'Sarah Wilson', date: '2024-01-14', total: 19500, status: 'Pending' },
+  { id: '#1005', customer: 'Chris Brown', date: '2024-01-13', total: 59500, status: 'Completed' },
 ];
 
 const mockCustomers = [
-  { id: 1, name: 'John Doe', email: 'john@example.com', orders: 5, spent: 1450 },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com', orders: 3, spent: 890 },
-  { id: 3, name: 'Mike Johnson', email: 'mike@example.com', orders: 8, spent: 2340 },
-  { id: 4, name: 'Sarah Wilson', email: 'sarah@example.com', orders: 2, spent: 520 },
+  { id: 1, name: 'John Doe', email: 'john@example.com', orders: 5, spent: 145000 },
+  { id: 2, name: 'Jane Smith', email: 'jane@example.com', orders: 3, spent: 89000 },
+  { id: 3, name: 'Mike Johnson', email: 'mike@example.com', orders: 8, spent: 234000 },
+  { id: 4, name: 'Sarah Wilson', email: 'sarah@example.com', orders: 2, spent: 52000 },
 ];
 
 const Admin = () => {
@@ -59,7 +60,7 @@ const Admin = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const stats = [
-    { label: 'Total Revenue', value: '$48,250', change: '+12.5%', icon: DollarSign, color: 'text-green-500' },
+    { label: 'Total Revenue', value: 'KSh 4,825,000', change: '+12.5%', icon: DollarSign, color: 'text-green-500' },
     { label: 'Total Orders', value: '156', change: '+8.2%', icon: ShoppingCart, color: 'text-blue-500' },
     { label: 'Total Products', value: products.length.toString(), change: '+2', icon: Package, color: 'text-purple-500' },
     { label: 'Total Customers', value: '89', change: '+15.3%', icon: Users, color: 'text-primary' },
@@ -188,7 +189,7 @@ const Admin = () => {
                         <TableCell className="font-medium">{order.id}</TableCell>
                         <TableCell>{order.customer}</TableCell>
                         <TableCell className="text-muted-foreground">{order.date}</TableCell>
-                        <TableCell>${order.total}</TableCell>
+                        <TableCell>{formatPrice(order.total)}</TableCell>
                         <TableCell>
                           <span className={cn(
                             "px-2 py-1 rounded-full text-xs font-medium",
@@ -262,10 +263,10 @@ const Admin = () => {
                         </TableCell>
                         <TableCell>{product.category}</TableCell>
                         <TableCell>
-                          <span className="font-medium">${product.price}</span>
+                          <span className="font-medium">{formatPrice(product.price)}</span>
                           {product.originalPrice && (
                             <span className="text-sm text-muted-foreground ml-2 line-through">
-                              ${product.originalPrice}
+                              {formatPrice(product.originalPrice)}
                             </span>
                           )}
                         </TableCell>
@@ -330,7 +331,7 @@ const Admin = () => {
                       <TableCell className="font-medium">{order.id}</TableCell>
                       <TableCell>{order.customer}</TableCell>
                       <TableCell className="text-muted-foreground">{order.date}</TableCell>
-                      <TableCell>${order.total}</TableCell>
+                      <TableCell>{formatPrice(order.total)}</TableCell>
                       <TableCell>
                         <span className={cn(
                           "px-2 py-1 rounded-full text-xs font-medium",
@@ -380,7 +381,7 @@ const Admin = () => {
                       <TableCell className="font-medium">{customer.name}</TableCell>
                       <TableCell className="text-muted-foreground">{customer.email}</TableCell>
                       <TableCell>{customer.orders}</TableCell>
-                      <TableCell>${customer.spent}</TableCell>
+                      <TableCell>{formatPrice(customer.spent)}</TableCell>
                       <TableCell className="text-right">
                         <Button variant="ghost" size="sm">
                           <Eye className="w-4 h-4" />

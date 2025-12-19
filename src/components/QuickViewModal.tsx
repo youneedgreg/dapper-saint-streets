@@ -6,6 +6,7 @@ import { useCart } from '@/hooks/useCart';
 import { useWishlist } from '@/hooks/useWishlist';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { formatPrice } from '@/lib/currency';
 
 interface QuickViewModalProps {
   product: Product | null;
@@ -102,10 +103,10 @@ const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps) => {
                   </h2>
                   
                   <div className="flex items-center gap-3 mb-6">
-                    <span className="text-2xl font-bold text-foreground">${product.price}</span>
+                    <span className="text-2xl font-bold text-foreground">{formatPrice(product.price)}</span>
                     {product.originalPrice && (
                       <span className="text-lg text-muted-foreground line-through">
-                        ${product.originalPrice}
+                        {formatPrice(product.originalPrice)}
                       </span>
                     )}
                   </div>

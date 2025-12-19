@@ -3,6 +3,7 @@ import { X, Minus, Plus, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { formatPrice } from '@/lib/currency';
 
 const CartDrawer = () => {
   const { items, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, totalPrice } = useCart();
@@ -89,7 +90,7 @@ const CartDrawer = () => {
                           {item.selectedColor} / {item.selectedSize}
                         </p>
                         <p className="text-sm font-semibold text-primary mt-1">
-                          ${item.product.price}
+                          {formatPrice(item.product.price)}
                         </p>
 
                         {/* Quantity controls */}
@@ -147,7 +148,7 @@ const CartDrawer = () => {
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Subtotal</span>
                   <span className="font-display text-xl font-semibold">
-                    ${totalPrice.toFixed(2)}
+                    {formatPrice(totalPrice)}
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground">

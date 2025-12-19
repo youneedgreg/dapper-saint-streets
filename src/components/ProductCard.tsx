@@ -5,6 +5,7 @@ import { Eye, ShoppingBag, Heart } from 'lucide-react';
 import { Product } from '@/data/products';
 import { useWishlist } from '@/hooks/useWishlist';
 import { cn } from '@/lib/utils';
+import { formatPrice } from '@/lib/currency';
 import QuickViewModal from './QuickViewModal';
 
 interface ProductCardProps {
@@ -109,9 +110,9 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
             </h3>
             <p className="text-sm text-muted-foreground">{product.category}</p>
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-foreground">${product.price}</span>
+              <span className="font-semibold text-foreground">{formatPrice(product.price)}</span>
               {product.originalPrice && (
-                <span className="text-sm text-muted-foreground line-through">${product.originalPrice}</span>
+                <span className="text-sm text-muted-foreground line-through">{formatPrice(product.originalPrice)}</span>
               )}
             </div>
             <div className="flex gap-1.5 pt-1">
