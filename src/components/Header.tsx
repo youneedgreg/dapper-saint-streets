@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ShoppingBag, Search, User } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { cn } from '@/lib/utils';
+import logo from '@/assets/logo.png';
 
 const navLinks = [
   { name: 'Shop', href: '/shop' },
@@ -19,7 +20,12 @@ const Header = () => {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-md border-b border-border/50">
+      <motion.header 
+        className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-md border-b border-border/50"
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+      >
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Mobile menu button */}
@@ -33,9 +39,11 @@ const Header = () => {
 
             {/* Logo */}
             <Link to="/" className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0">
-              <h1 className="font-display text-xl md:text-2xl font-bold tracking-wider">
-                DAPPER<span className="text-gradient-gold ml-1">SAINT</span>
-              </h1>
+              <img 
+                src={logo} 
+                alt="Dapper Saint" 
+                className="h-12 md:h-14 w-auto"
+              />
             </Link>
 
             {/* Desktop navigation */}
@@ -85,7 +93,7 @@ const Header = () => {
             </div>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       {/* Mobile menu */}
       <AnimatePresence>
@@ -107,9 +115,11 @@ const Header = () => {
             >
               <div className="flex flex-col h-full">
                 <div className="flex items-center justify-between p-4 border-b border-border">
-                  <h2 className="font-display text-xl font-bold">
-                    DAPPER<span className="text-gradient-gold ml-1">SAINT</span>
-                  </h2>
+                  <img 
+                    src={logo} 
+                    alt="Dapper Saint" 
+                    className="h-10 w-auto"
+                  />
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="p-2 text-foreground"

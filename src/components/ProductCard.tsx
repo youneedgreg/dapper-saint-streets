@@ -38,9 +38,11 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
   return (
     <>
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
         transition={{ delay: index * 0.1, duration: 0.5 }}
+        whileHover={{ y: -8 }}
         className="group relative"
         onMouseEnter={() => {
           setIsHovered(true);
