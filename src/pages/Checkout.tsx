@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Check, CreditCard, Truck, Package } from 'lucide-react';
+import { ArrowLeft, Check, CreditCard, Truck, Package, Smartphone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import { useCart } from '@/hooks/useCart';
@@ -16,12 +16,16 @@ const steps = [
   { id: 3, name: 'Review', icon: Package },
 ];
 
+type PaymentMethod = 'card' | 'mpesa';
+
 const Checkout = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('card');
+  const [mpesaPhone, setMpesaPhone] = useState('');
   const { items, totalPrice } = useCart();
 
-  const shipping = 15;
-  const tax = totalPrice * 0.08;
+  const shipping = 500;
+  const tax = totalPrice * 0.16;
   const total = totalPrice + shipping + tax;
 
   return (
@@ -99,7 +103,7 @@ const Checkout = () => {
 
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone</Label>
-                      <Input id="phone" type="tel" placeholder="+1 (555) 000-0000" />
+                      <Input id="phone" type="tel" placeholder="+254 700 000 000" />
                     </div>
 
                     <div className="space-y-2">
@@ -110,15 +114,15 @@ const Checkout = () => {
                     <div className="grid md:grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="city">City</Label>
-                        <Input id="city" placeholder="New York" />
+                        <Input id="city" placeholder="Nairobi" />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="state">State</Label>
-                        <Input id="state" placeholder="NY" />
+                        <Label htmlFor="county">County</Label>
+                        <Input id="county" placeholder="Nairobi" />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="zip">ZIP Code</Label>
-                        <Input id="zip" placeholder="10001" />
+                        <Label htmlFor="zip">Postal Code</Label>
+                        <Input id="zip" placeholder="00100" />
                       </div>
                     </div>
 
@@ -130,30 +134,112 @@ const Checkout = () => {
 
                 {currentStep === 2 && (
                   <div className="space-y-6">
-                    <h2 className="font-display text-2xl font-bold mb-6">Payment Information</h2>
+                    <h2 className="font-display text-2xl font-bold mb-6">Payment Method</h2>
                     
-                    <div className="space-y-2">
-                      <Label htmlFor="cardName">Name on Card</Label>
-                      <Input id="cardName" placeholder="John Doe" />
+                    {/* Payment Method Selection */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <button
+                        onClick={() => setPaymentMethod('card')}
+                        className={cn(
+                          "p-4 border rounded-lg flex items-center gap-4 transition-all",
+                          paymentMethod === 'card'
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-muted-foreground"
+                        )}
+                      >
+                        <div className={cn(
+                          "w-12 h-12 rounded-full flex items-center justify-center",
+                          paymentMethod === 'card' ? "bg-primary text-primary-foreground" : "bg-muted"
+                        )}>
+                          <CreditCard className="w-6 h-6" />
+                        </div>
+                        <div className="text-left">
+                          <p className="font-semibold">Credit/Debit Card</p>
+                          <p className="text-sm text-muted-foreground">Visa, Mastercard</p>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => setPaymentMethod('mpesa')}
+                        className={cn(
+                          "p-4 border rounded-lg flex items-center gap-4 transition-all",
+                          paymentMethod === 'mpesa'
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-muted-foreground"
+                        )}
+                      >
+                        <div className={cn(
+                          "w-12 h-12 rounded-full flex items-center justify-center",
+                          paymentMethod === 'mpesa' ? "bg-[#4CAF50] text-foreground" : "bg-muted"
+                        )}>
+                          <Smartphone className="w-6 h-6" />
+                        </div>
+                        <div className="text-left">
+                          <p className="font-semibold">M-Pesa</p>
+                          <p className="text-sm text-muted-foreground">Pay via mobile money</p>
+                        </div>
+                      </button>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="cardNumber">Card Number</Label>
-                      <Input id="cardNumber" placeholder="4242 4242 4242 4242" />
-                    </div>
+                    {/* Card Payment Form */}
+                    {paymentMethod === 'card' && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        className="space-y-4 pt-4"
+                      >
+                        <div className="space-y-2">
+                          <Label htmlFor="cardName">Name on Card</Label>
+                          <Input id="cardName" placeholder="John Doe" />
+                        </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="expiry">Expiry Date</Label>
-                        <Input id="expiry" placeholder="MM/YY" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="cvv">CVV</Label>
-                        <Input id="cvv" placeholder="123" />
-                      </div>
-                    </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="cardNumber">Card Number</Label>
+                          <Input id="cardNumber" placeholder="4242 4242 4242 4242" />
+                        </div>
 
-                    <div className="flex gap-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="expiry">Expiry Date</Label>
+                            <Input id="expiry" placeholder="MM/YY" />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="cvv">CVV</Label>
+                            <Input id="cvv" placeholder="123" />
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* M-Pesa Payment Form */}
+                    {paymentMethod === 'mpesa' && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        className="space-y-4 pt-4"
+                      >
+                        <div className="p-4 bg-[#4CAF50]/10 border border-[#4CAF50]/30 rounded-lg">
+                          <p className="text-sm text-foreground">
+                            You will receive a push notification on your phone to complete the payment.
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="mpesaPhone">M-Pesa Phone Number</Label>
+                          <Input 
+                            id="mpesaPhone" 
+                            placeholder="0700 000 000"
+                            value={mpesaPhone}
+                            onChange={(e) => setMpesaPhone(e.target.value)}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Enter the phone number registered with M-Pesa
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    <div className="flex gap-4 pt-4">
                       <Button onClick={() => setCurrentStep(1)} variant="outline" className="flex-1" size="lg">
                         Back
                       </Button>
@@ -193,11 +279,23 @@ const Checkout = () => {
                     <div className="pt-4 border-t border-border space-y-2">
                       <div className="flex justify-between text-muted-foreground">
                         <span>Shipping Address</span>
-                        <span>123 Street Name, New York, NY 10001</span>
+                        <span>Nairobi, Kenya</span>
                       </div>
                       <div className="flex justify-between text-muted-foreground">
                         <span>Payment Method</span>
-                        <span>•••• 4242</span>
+                        <span className="flex items-center gap-2">
+                          {paymentMethod === 'mpesa' ? (
+                            <>
+                              <Smartphone className="w-4 h-4" />
+                              M-Pesa
+                            </>
+                          ) : (
+                            <>
+                              <CreditCard className="w-4 h-4" />
+                              •••• 4242
+                            </>
+                          )}
+                        </span>
                       </div>
                     </div>
 
@@ -206,7 +304,7 @@ const Checkout = () => {
                         Back
                       </Button>
                       <Button className="flex-1" size="lg">
-                        Place Order
+                        {paymentMethod === 'mpesa' ? 'Pay with M-Pesa' : 'Place Order'}
                       </Button>
                     </div>
                   </div>
@@ -251,7 +349,7 @@ const Checkout = () => {
                     <span>{formatPrice(shipping)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Tax</span>
+                    <span className="text-muted-foreground">VAT (16%)</span>
                     <span>{formatPrice(tax)}</span>
                   </div>
                   <div className="flex justify-between text-lg font-bold pt-3 border-t border-border">
