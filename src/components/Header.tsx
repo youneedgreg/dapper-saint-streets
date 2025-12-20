@@ -5,16 +5,18 @@ import { Menu, X, ShoppingBag, Search, User } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { cn } from '@/lib/utils';
 import logo from '@/assets/logo.png';
+import SearchModal from './SearchModal';
 
 const navLinks = [
   { name: 'Shop', href: '/shop' },
-  { name: 'Collections', href: '/collections' },
+  { name: 'Lookbook', href: '/lookbook' },
   { name: 'About', href: '/about' },
   { name: 'Contact', href: '/contact' },
 ];
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { totalItems, setIsCartOpen } = useCart();
   const location = useLocation();
 
@@ -53,13 +55,19 @@ const Header = () => {
                   key={link.name}
                   to={link.href}
                   className={cn(
-                    "text-sm font-body tracking-wide uppercase line-reveal transition-colors",
+                    "relative text-sm font-body tracking-wide uppercase transition-colors py-1",
                     location.pathname === link.href
                       ? "text-primary"
                       : "text-foreground hover:text-primary"
                   )}
                 >
                   {link.name}
+                  <span 
+                    className={cn(
+                      "absolute bottom-0 left-0 w-full h-[1px] bg-primary transition-transform duration-300 origin-left",
+                      location.pathname === link.href ? "scale-x-100" : "scale-x-0"
+                    )}
+                  />
                 </Link>
               ))}
             </nav>
@@ -69,6 +77,7 @@ const Header = () => {
               <button 
                 className="p-2 text-foreground hover:text-primary transition-colors"
                 aria-label="Search"
+                onClick={() => setIsSearchOpen(true)}
               >
                 <Search className="w-5 h-5" />
               </button>
@@ -94,6 +103,9 @@ const Header = () => {
           </div>
         </div>
       </motion.header>
+
+      {/* Search Modal */}
+      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
       {/* Mobile menu */}
       <AnimatePresence>
