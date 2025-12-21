@@ -1,49 +1,25 @@
 import { Link } from 'react-router-dom';
-import { Instagram, Twitter, Youtube } from 'lucide-react';
+import { Instagram, Twitter } from 'lucide-react';
+import logo from '@/assets/logo.png';
 
 const Footer = () => {
   return (
-    <footer className="bg-card border-t border-border">
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
+    <footer className="bg-background border-t border-border">
+      <div className="container mx-auto px-6 py-16 md:py-20">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8">
           {/* Brand */}
-          <div className="md:col-span-1">
-            <Link to="/" className="inline-block mb-4">
-              <h3 className="font-display text-2xl font-bold">
-                DAPPER<span className="text-gradient-gold ml-1">SAINT</span>
-              </h3>
+          <div className="md:col-span-4">
+            <Link to="/" className="inline-block mb-6">
+              <img src={logo} alt="Dapper Saint" className="h-10 w-auto" />
             </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-              Where luxury meets the streets. Elevating urban fashion with premium craftsmanship and bold design.
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
+              Where luxury craftsmanship meets street culture. Premium streetwear for those who refuse to blend in.
             </p>
-            <div className="flex gap-4">
-              <a
-                href="#"
-                className="p-2 bg-secondary rounded-full text-foreground hover:text-primary hover:bg-secondary/80 transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                className="p-2 bg-secondary rounded-full text-foreground hover:text-primary hover:bg-secondary/80 transition-colors"
-                aria-label="Twitter"
-              >
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                className="p-2 bg-secondary rounded-full text-foreground hover:text-primary hover:bg-secondary/80 transition-colors"
-                aria-label="YouTube"
-              >
-                <Youtube className="w-5 h-5" />
-              </a>
-            </div>
           </div>
 
-          {/* Shop */}
-          <div>
-            <h4 className="font-display text-sm font-semibold uppercase tracking-wider mb-4">
+          {/* Links */}
+          <div className="md:col-span-2">
+            <h4 className="text-xs tracking-[0.2em] uppercase mb-6 text-foreground">
               Shop
             </h4>
             <ul className="space-y-3">
@@ -51,7 +27,7 @@ const Footer = () => {
                 <li key={item}>
                   <Link
                     to="/shop"
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {item}
                   </Link>
@@ -60,22 +36,20 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Company */}
-          <div>
-            <h4 className="font-display text-sm font-semibold uppercase tracking-wider mb-4">
+          <div className="md:col-span-2">
+            <h4 className="text-xs tracking-[0.2em] uppercase mb-6 text-foreground">
               Company
             </h4>
             <ul className="space-y-3">
               {[
-                { name: 'About Us', href: '/about' },
+                { name: 'About', href: '/about' },
                 { name: 'Contact', href: '/contact' },
-                { name: 'Careers', href: '#' },
-                { name: 'Press', href: '#' },
+                { name: 'Lookbook', href: '/lookbook' },
               ].map(item => (
                 <li key={item.name}>
                   <Link
                     to={item.href}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {item.name}
                   </Link>
@@ -84,23 +58,45 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Support */}
-          <div>
-            <h4 className="font-display text-sm font-semibold uppercase tracking-wider mb-4">
-              Support
+          <div className="md:col-span-2">
+            <h4 className="text-xs tracking-[0.2em] uppercase mb-6 text-foreground">
+              Help
             </h4>
             <ul className="space-y-3">
-              {['Shipping', 'Returns', 'FAQ', 'Size Guide', 'Track Order'].map(item => (
+              {['Shipping', 'Returns', 'FAQ', 'Size Guide'].map(item => (
                 <li key={item}>
                   <Link
                     to="#"
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {item}
                   </Link>
                 </li>
               ))}
             </ul>
+          </div>
+
+          {/* Social */}
+          <div className="md:col-span-2">
+            <h4 className="text-xs tracking-[0.2em] uppercase mb-6 text-foreground">
+              Follow
+            </h4>
+            <div className="flex gap-4">
+              <a
+                href="#"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Instagram"
+              >
+                <Instagram className="w-5 h-5" strokeWidth={1.5} />
+              </a>
+              <a
+                href="#"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Twitter"
+              >
+                <Twitter className="w-5 h-5" strokeWidth={1.5} />
+              </a>
+            </div>
           </div>
         </div>
 
@@ -111,10 +107,10 @@ const Footer = () => {
           </p>
           <div className="flex gap-6">
             <Link to="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-              Privacy Policy
+              Privacy
             </Link>
             <Link to="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-              Terms of Service
+              Terms
             </Link>
           </div>
         </div>

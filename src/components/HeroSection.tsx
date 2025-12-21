@@ -1,134 +1,95 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Play } from 'lucide-react';
+import { ArrowDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 const HeroSection = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 md:pt-20">
-      {/* Background image with zoom effect */}
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Background image */}
       <motion.div 
         className="absolute inset-0"
-        initial={{ scale: 1.2 }}
+        initial={{ scale: 1.1 }}
         animate={{ scale: 1 }}
-        transition={{ duration: 1.5, ease: 'easeOut' }}
+        transition={{ duration: 1.8, ease: [0.25, 0.1, 0.25, 1] }}
       >
         <img
           src="https://images.unsplash.com/photo-1523398002811-999ca8dec234?w=1920&auto=format&fit=crop"
           alt="Hero background"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
-        <div className="absolute inset-0 bg-grain pointer-events-none" />
+        <div className="absolute inset-0 bg-background/40" />
       </motion.div>
 
       {/* Content */}
-      <div className="container mx-auto px-4 relative z-10 py-20 md:py-32">
+      <div className="container mx-auto px-6 relative z-10 pt-32">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="mb-6"
+          {/* Collection tag */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="text-xs tracking-[0.4em] uppercase text-muted-foreground mb-8"
           >
-            <span className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-xs font-body tracking-wider uppercase text-primary">
-              <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-              Winter 2025
-            </span>
-          </motion.div>
+            Winter Collection 2025
+          </motion.p>
 
           {/* Main heading */}
           <motion.h1
-            className="font-display text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.9] mb-6 uppercase"
-            initial={{ opacity: 0, y: 30 }}
+            className="font-display text-5xl md:text-7xl lg:text-8xl font-medium leading-[0.95] mb-8 tracking-tight"
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
+            transition={{ delay: 0.7, duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            <span className="block">Luxury</span>
-            <span className="block mt-2">
-              <span className="text-gradient-gold">Redefined</span>
-            </span>
+            Dapper Saint
           </motion.h1>
 
           {/* Subheading */}
           <motion.p
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.8 }}
-          >
-            Where luxury craftsmanship meets street culture. 
-            Premium streetwear for those who refuse to blend in.
-          </motion.p>
-
-          {/* CTA buttons */}
-          <motion.div
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            className="text-base md:text-lg text-muted-foreground max-w-md mx-auto mb-12 leading-relaxed"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ delay: 0.9, duration: 0.8 }}
           >
+            Where luxury craftsmanship meets street culture
+          </motion.p>
+
+          {/* CTA button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.1, duration: 0.8 }}
+          >
             <Button
               asChild
               size="lg"
-              className="h-14 px-10 bg-primary text-primary-foreground hover:bg-primary/90 text-base font-semibold group"
+              className="h-12 px-12 bg-foreground text-background hover:bg-foreground/90 text-xs tracking-[0.2em] uppercase font-medium"
             >
               <Link to="/shop">
-                Shop Collection
-                <motion.span
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </motion.span>
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="h-14 px-10 border-foreground/20 hover:bg-foreground/5 text-base"
-            >
-              <Link to="/about" className="flex items-center">
-                <Play className="w-4 h-4 mr-2" />
-                Our Story
+                Shop Now
               </Link>
             </Button>
           </motion.div>
         </div>
 
-        {/* Scroll indicator with breathing animation */}
+        {/* Scroll indicator */}
         <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          className="absolute bottom-12 left-1/2 -translate-x-1/2"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5, duration: 1 }}
         >
-          <div className="flex flex-col items-center gap-2">
-            <span className="text-xs font-body tracking-widest uppercase text-muted-foreground">
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="flex flex-col items-center gap-3"
+          >
+            <span className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground">
               Scroll
             </span>
-            <motion.div
-              className="w-[1px] bg-muted-foreground/50"
-              animate={{ height: [48, 24, 48] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            />
-          </div>
+            <ArrowDown className="w-4 h-4 text-muted-foreground" strokeWidth={1} />
+          </motion.div>
         </motion.div>
-      </div>
-
-      {/* Side text */}
-      <div className="hidden lg:block absolute left-8 top-1/2 -translate-y-1/2">
-        <span className="text-xs tracking-[0.3em] uppercase text-muted-foreground -rotate-90 inline-block origin-center whitespace-nowrap">
-          Est. 2024 — Luxury Streetwear
-        </span>
-      </div>
-
-      <div className="hidden lg:block absolute right-8 top-1/2 -translate-y-1/2">
-        <span className="text-xs tracking-[0.3em] uppercase text-muted-foreground rotate-90 inline-block origin-center whitespace-nowrap">
-          Scroll to Explore
-        </span>
       </div>
     </section>
   );
