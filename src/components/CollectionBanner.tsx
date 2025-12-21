@@ -18,7 +18,7 @@ const CollectionBanner = () => {
             <Link to="/shop">
               <img
                 src="https://images.unsplash.com/photo-1548712464-dca92c91de31?w=800&auto=format&fit=crop"
-                alt="Winter collection"
+                alt="Premium collection"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
               />
               <div className="absolute inset-0 bg-background/20" />
@@ -27,7 +27,7 @@ const CollectionBanner = () => {
                   Collection
                 </p>
                 <h3 className="font-display text-2xl md:text-3xl font-medium tracking-tight text-foreground mb-4">
-                  Winter Essentials
+                  Premium Essentials
                 </h3>
                 <span className="inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase text-foreground group-hover:gap-3 transition-all">
                   Shop Now

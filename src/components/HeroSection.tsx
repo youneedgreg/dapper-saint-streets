@@ -18,7 +18,7 @@ const HeroSection = () => {
           alt="Hero background"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-background/40" />
+        <div className="absolute inset-0 bg-black/50" />
       </motion.div>
 
       {/* Content */}
@@ -29,14 +29,14 @@ const HeroSection = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.8 }}
-            className="text-xs tracking-[0.4em] uppercase text-muted-foreground mb-8"
+            className="text-xs tracking-[0.4em] uppercase text-white/80 mb-8"
           >
-            Winter Collection 2025
+            New Collection
           </motion.p>
 
           {/* Main heading */}
           <motion.h1
-            className="font-display text-5xl md:text-7xl lg:text-8xl font-medium leading-[0.95] mb-8 tracking-tight"
+            className="font-display text-5xl md:text-7xl lg:text-8xl font-medium leading-[0.95] mb-8 tracking-tight text-white"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
@@ -46,7 +46,7 @@ const HeroSection = () => {
 
           {/* Subheading */}
           <motion.p
-            className="text-base md:text-lg text-muted-foreground max-w-md mx-auto mb-12 leading-relaxed"
+            className="text-base md:text-lg text-white/70 max-w-md mx-auto mb-12 leading-relaxed"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.9, duration: 0.8 }}
@@ -63,7 +63,7 @@ const HeroSection = () => {
             <Button
               asChild
               size="lg"
-              className="h-12 px-12 bg-foreground text-background hover:bg-foreground/90 text-xs tracking-[0.2em] uppercase font-medium"
+              className="h-12 px-12 bg-white text-black hover:bg-white/90 text-xs tracking-[0.2em] uppercase font-medium"
             >
               <Link to="/shop">
                 Shop Now
@@ -84,10 +84,10 @@ const HeroSection = () => {
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             className="flex flex-col items-center gap-3"
           >
-            <span className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground">
+            <span className="text-[10px] tracking-[0.3em] uppercase text-white/60">
               Scroll
             </span>
-            <ArrowDown className="w-4 h-4 text-muted-foreground" strokeWidth={1} />
+            <ArrowDown className="w-4 h-4 text-white/60" strokeWidth={1} />
           </motion.div>
         </motion.div>
       </div>
