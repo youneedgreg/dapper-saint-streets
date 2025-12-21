@@ -9,37 +9,37 @@ const lookbookImages = [
     id: 1,
     src: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1200&auto=format&fit=crop",
     title: "Urban Edge",
-    season: "Winter 2025"
+    collection: "Essentials"
   },
   {
     id: 2,
     src: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1200&auto=format&fit=crop",
     title: "Street Royalty",
-    season: "Winter 2025"
+    collection: "Premium"
   },
   {
     id: 3,
     src: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=1200&auto=format&fit=crop",
     title: "Dark Dynasty",
-    season: "Winter 2025"
+    collection: "Signature"
   },
   {
     id: 4,
     src: "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=1200&auto=format&fit=crop",
     title: "Golden Hour",
-    season: "Winter 2025"
+    collection: "Luxe"
   },
   {
     id: 5,
     src: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=1200&auto=format&fit=crop",
     title: "Night Reign",
-    season: "Winter 2025"
+    collection: "After Dark"
   },
   {
     id: 6,
     src: "https://images.unsplash.com/photo-1544441893-675973e31985?w=1200&auto=format&fit=crop",
     title: "Crown Collection",
-    season: "Winter 2025"
+    collection: "Royal"
   },
 ];
 
@@ -59,7 +59,7 @@ const Lookbook = () => {
           transition={{ duration: 0.6 }}
         >
           <span className="text-xs font-body tracking-[0.3em] uppercase text-primary mb-4 block">
-            Winter 2025
+            Latest Collection
           </span>
           <h1 className="font-display text-5xl md:text-7xl font-bold mb-6">
             LOOK<span className="text-gradient-gold">BOOK</span>
@@ -97,7 +97,7 @@ const Lookbook = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="absolute bottom-0 left-0 right-0 p-6">
                     <span className="text-xs font-body tracking-widest uppercase text-primary block mb-2">
-                      {image.season}
+                      {image.collection}
                     </span>
                     <h3 className="font-display text-2xl font-bold">{image.title}</h3>
                   </div>
@@ -170,7 +170,7 @@ const Lookbook = () => {
               
               <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background to-transparent">
                 <span className="text-xs font-body tracking-widest uppercase text-primary block mb-2">
-                  {selectedImage.season}
+                  {selectedImage.collection}
                 </span>
                 <h3 className="font-display text-3xl font-bold">{selectedImage.title}</h3>
               </div>

@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ShoppingBag, Search } from 'lucide-react';
+import { Menu, X, ShoppingBag, Search, Sun, Moon } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
+import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
-import logo from '@/assets/logo.png';
+import logoLight from '@/assets/logo.png';
+import logoDark from '@/assets/logo-dark.png';
 import SearchModal from './SearchModal';
 
 const navLinks = [
@@ -18,7 +20,10 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { totalItems, setIsCartOpen } = useCart();
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
+
+  const logo = theme === 'dark' ? logoLight : logoDark;
 
   return (
     <>
@@ -40,15 +45,15 @@ const Header = () => {
         {/* Main header */}
         <div className="border-b border-border">
           <div className="container mx-auto px-6">
-            <div className="flex items-center justify-between h-16">
+            <div className="flex items-center justify-between h-16 relative">
               {/* Left nav - Desktop */}
-              <nav className="hidden md:flex items-center gap-8">
+              <nav className="hidden md:flex items-center gap-8 flex-1">
                 {navLinks.slice(0, 2).map(link => (
                   <Link
                     key={link.name}
                     to={link.href}
                     className={cn(
-                      "text-xs tracking-[0.2em] uppercase transition-colors line-reveal",
+                      "text-xs tracking-[0.2em] uppercase transition-colors",
                       location.pathname === link.href
                         ? "text-foreground"
                         : "text-muted-foreground hover:text-foreground"
@@ -69,7 +74,7 @@ const Header = () => {
               </button>
 
               {/* Logo - Centered */}
-              <Link to="/" className="absolute left-1/2 -translate-x-1/2">
+              <Link to="/" className="absolute left-1/2 -translate-x-1/2 z-10">
                 <img 
                   src={logo} 
                   alt="Dapper Saint" 
@@ -78,13 +83,13 @@ const Header = () => {
               </Link>
 
               {/* Right nav - Desktop */}
-              <nav className="hidden md:flex items-center gap-8">
+              <nav className="hidden md:flex items-center gap-8 flex-1 justify-end">
                 {navLinks.slice(2).map(link => (
                   <Link
                     key={link.name}
                     to={link.href}
                     className={cn(
-                      "text-xs tracking-[0.2em] uppercase transition-colors line-reveal",
+                      "text-xs tracking-[0.2em] uppercase transition-colors",
                       location.pathname === link.href
                         ? "text-foreground"
                         : "text-muted-foreground hover:text-foreground"
@@ -96,7 +101,18 @@ const Header = () => {
               </nav>
 
               {/* Right icons */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <button
+                  className="p-2 text-foreground hover:text-muted-foreground transition-colors"
+                  onClick={toggleTheme}
+                  aria-label="Toggle theme"
+                >
+                  {theme === 'dark' ? (
+                    <Sun className="w-5 h-5" strokeWidth={1.5} />
+                  ) : (
+                    <Moon className="w-5 h-5" strokeWidth={1.5} />
+                  )}
+                </button>
                 <button 
                   className="p-2 text-foreground hover:text-muted-foreground transition-colors"
                   aria-label="Search"
@@ -184,6 +200,26 @@ const Header = () => {
                     ))}
                   </ul>
                 </nav>
+
+                {/* Theme toggle in mobile menu */}
+                <div className="p-6 border-t border-border">
+                  <button
+                    className="flex items-center gap-3 text-muted-foreground"
+                    onClick={toggleTheme}
+                  >
+                    {theme === 'dark' ? (
+                      <>
+                        <Sun className="w-5 h-5" strokeWidth={1.5} />
+                        <span className="text-sm">Light Mode</span>
+                      </>
+                    ) : (
+                      <>
+                        <Moon className="w-5 h-5" strokeWidth={1.5} />
+                        <span className="text-sm">Dark Mode</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </>

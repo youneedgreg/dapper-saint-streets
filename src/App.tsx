@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/hooks/useCart";
 import { WishlistProvider } from "@/hooks/useWishlist";
+import { ThemeProvider } from "@/hooks/useTheme";
 import LoadingScreen from "@/components/LoadingScreen";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
@@ -33,29 +34,31 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CartProvider>
-        <WishlistProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/shop" element={<Shop />} />
-                <Route path="/product/:id" element={<ProductDetail />} />
-                <Route path="/collections" element={<Shop />} />
-                <Route path="/lookbook" element={<Lookbook />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/wishlist" element={<Wishlist />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route path="/admin" element={<Admin />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </WishlistProvider>
-      </CartProvider>
+      <ThemeProvider>
+        <CartProvider>
+          <WishlistProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/shop" element={<Shop />} />
+                  <Route path="/product/:id" element={<ProductDetail />} />
+                  <Route path="/collections" element={<Shop />} />
+                  <Route path="/lookbook" element={<Lookbook />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/wishlist" element={<Wishlist />} />
+                  <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/admin" element={<Admin />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+          </WishlistProvider>
+        </CartProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 };
