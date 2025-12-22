@@ -17,11 +17,14 @@ import Wishlist from "./pages/Wishlist";
 import Checkout from "./pages/Checkout";
 import Lookbook from "./pages/Lookbook";
 import Admin from "./pages/Admin";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => {
+const AppContent = () => {
   const [loading, setLoading] = useState(true);
 
   const handleLoadingComplete = () => {
@@ -33,31 +36,40 @@ const App = () => {
   }
 
   return (
+    <CartProvider>
+      <WishlistProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/collections" element={<Shop />} />
+              <Route path="/lookbook" element={<Lookbook />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </WishlistProvider>
+    </CartProvider>
+  );
+};
+
+const App = () => {
+  return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <CartProvider>
-          <WishlistProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/shop" element={<Shop />} />
-                  <Route path="/product/:id" element={<ProductDetail />} />
-                  <Route path="/collections" element={<Shop />} />
-                  <Route path="/lookbook" element={<Lookbook />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/wishlist" element={<Wishlist />} />
-                  <Route path="/checkout" element={<Checkout />} />
-                  <Route path="/admin" element={<Admin />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
-            </TooltipProvider>
-          </WishlistProvider>
-        </CartProvider>
+        <AppContent />
       </ThemeProvider>
     </QueryClientProvider>
   );
