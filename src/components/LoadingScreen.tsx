@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import logo from '@/assets/logo.png';
+import { useTheme } from '@/hooks/useTheme';
+import logoLight from '@/assets/logo.png';
+import logoDark from '@/assets/logo-dark.png';
 
 interface LoadingScreenProps {
   onComplete: () => void;
@@ -8,6 +10,9 @@ interface LoadingScreenProps {
 
 const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
   const [progress, setProgress] = useState(0);
+  const { theme } = useTheme();
+  
+  const logo = theme === 'dark' ? logoLight : logoDark;
 
   useEffect(() => {
     const timer = setInterval(() => {

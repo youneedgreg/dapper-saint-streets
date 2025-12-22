@@ -21,15 +21,15 @@ const CollectionBanner = () => {
                 alt="Premium collection"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
               />
-              <div className="absolute inset-0 bg-background/20" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-8">
-                <p className="text-xs tracking-[0.3em] uppercase text-foreground/80 mb-2">
+                <p className="text-xs tracking-[0.3em] uppercase text-white/80 mb-2">
                   Collection
                 </p>
-                <h3 className="font-display text-2xl md:text-3xl font-medium tracking-tight text-foreground mb-4">
+                <h3 className="font-display text-2xl md:text-3xl font-medium tracking-tight text-white mb-4">
                   Premium Essentials
                 </h3>
-                <span className="inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase text-foreground group-hover:gap-3 transition-all">
+                <span className="inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase text-white group-hover:gap-3 transition-all">
                   Shop Now
                   <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
                 </span>
@@ -52,12 +52,12 @@ const CollectionBanner = () => {
                   alt="Street style"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
                 />
-                <div className="absolute inset-0 bg-background/20" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <p className="text-xs tracking-[0.3em] uppercase text-foreground/80 mb-1">
+                  <p className="text-xs tracking-[0.3em] uppercase text-white/80 mb-1">
                     Trending
                   </p>
-                  <h3 className="font-display text-xl font-medium tracking-tight text-foreground">
+                  <h3 className="font-display text-xl font-medium tracking-tight text-white">
                     Street Luxe
                   </h3>
                 </div>
@@ -77,12 +77,12 @@ const CollectionBanner = () => {
                   alt="Accessories"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
                 />
-                <div className="absolute inset-0 bg-background/20" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <p className="text-xs tracking-[0.3em] uppercase text-foreground/80 mb-1">
+                  <p className="text-xs tracking-[0.3em] uppercase text-white/80 mb-1">
                     New In
                   </p>
-                  <h3 className="font-display text-xl font-medium tracking-tight text-foreground">
+                  <h3 className="font-display text-xl font-medium tracking-tight text-white">
                     Accessories
                   </h3>
                 </div>

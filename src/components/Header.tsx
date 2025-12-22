@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ShoppingBag, Search, Sun, Moon } from 'lucide-react';
+import { Menu, X, ShoppingBag, Search, Sun, Moon, User } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
@@ -101,7 +101,7 @@ const Header = () => {
               </nav>
 
               {/* Right icons */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <button
                   className="p-2 text-foreground hover:text-muted-foreground transition-colors"
                   onClick={toggleTheme}
@@ -120,6 +120,13 @@ const Header = () => {
                 >
                   <Search className="w-5 h-5" strokeWidth={1.5} />
                 </button>
+                <Link
+                  to="/login"
+                  className="p-2 text-foreground hover:text-muted-foreground transition-colors"
+                  aria-label="Account"
+                >
+                  <User className="w-5 h-5" strokeWidth={1.5} />
+                </Link>
                 <button
                   className="p-2 text-foreground hover:text-muted-foreground transition-colors relative"
                   onClick={() => setIsCartOpen(true)}
@@ -153,7 +160,7 @@ const Header = () => {
               onClick={() => setIsMobileMenuOpen(false)}
             />
             <motion.div
-              className="fixed inset-y-0 left-0 w-full max-w-sm bg-background z-50 border-r border-border"
+              className="fixed inset-y-0 left-0 w-full max-w-sm bg-background/95 backdrop-blur-md z-50 border-r border-border"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}

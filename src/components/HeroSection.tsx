@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { ArrowDown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 const HeroSection = () => {
@@ -60,15 +59,12 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.1, duration: 0.8 }}
           >
-            <Button
-              asChild
-              size="lg"
-              className="h-12 px-12 bg-white text-black hover:bg-white/90 text-xs tracking-[0.2em] uppercase font-medium"
+            <Link 
+              to="/shop"
+              className="inline-block h-12 px-12 bg-white text-black hover:bg-white/90 text-xs tracking-[0.2em] uppercase font-medium leading-[48px] transition-colors"
             >
-              <Link to="/shop">
-                Shop Now
-              </Link>
-            </Button>
+              Shop Now
+            </Link>
           </motion.div>
         </div>
 
