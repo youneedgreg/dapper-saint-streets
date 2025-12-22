@@ -30,6 +30,8 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
+import ProductFormModal from '@/components/admin/ProductFormModal';
+import { useToast } from '@/hooks/use-toast';
 
 const sidebarLinks = [
   { name: 'Dashboard', icon: LayoutDashboard, id: 'dashboard' },
@@ -58,6 +60,31 @@ const mockCustomers = [
 const Admin = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [productModalOpen, setProductModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const { toast } = useToast();
+
+  const handleProductSubmit = (data: any) => {
+    // This will connect to Supabase once you set it up
+    toast({
+      title: editingProduct ? "Product Updated" : "Product Added",
+      description: `${data.name} has been ${editingProduct ? 'updated' : 'added'} successfully. Connect Supabase to persist.`,
+    });
+    setEditingProduct(null);
+  };
+
+  const handleEditProduct = (product: any) => {
+    setEditingProduct(product);
+    setProductModalOpen(true);
+  };
+
+  const handleDeleteProduct = (productId: string) => {
+    toast({
+      title: "Delete Product",
+      description: "Connect Supabase to enable product deletion.",
+      variant: "destructive",
+    });
+  };
 
   const stats = [
     { label: 'Total Revenue', value: 'KSh 4,825,000', change: '+12.5%', icon: DollarSign, color: 'text-green-500' },
@@ -227,11 +254,18 @@ const Admin = () => {
                     Filter
                   </Button>
                 </div>
-                <Button>
+                <Button onClick={() => { setEditingProduct(null); setProductModalOpen(true); }}>
                   <Plus className="w-4 h-4 mr-2" />
                   Add Product
                 </Button>
               </div>
+
+              <ProductFormModal
+                open={productModalOpen}
+                onOpenChange={setProductModalOpen}
+                product={editingProduct}
+                onSubmit={handleProductSubmit}
+              />
 
               <div className="bg-card rounded-lg border border-border overflow-hidden">
                 <Table>
