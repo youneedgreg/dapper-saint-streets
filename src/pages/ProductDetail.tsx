@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Minus, Plus, Heart, Share2, ChevronLeft } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Minus, Plus, Heart, Share2, ChevronLeft, Move3D, Users } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
+import Product3DViewer from '@/components/Product3DViewer';
+import StyledLooksSection from '@/components/StyledLooksSection';
 import { Button } from '@/components/ui/button';
 import { getProductById } from '@/data/products';
 import { useCart } from '@/hooks/useCart';
@@ -20,6 +22,7 @@ const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [currentImage, setCurrentImage] = useState(0);
+  const [show3DViewer, setShow3DViewer] = useState(false);
 
   if (!product) return <div className="min-h-screen bg-background flex items-center justify-center">Product not found</div>;
 
@@ -40,8 +43,14 @@ const ProductDetail = () => {
           </Link>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
             <div className="space-y-4">
-              <motion.div className="aspect-[3/4] bg-card rounded-lg overflow-hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+              <motion.div className="aspect-[3/4] bg-card rounded-lg overflow-hidden relative group" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <img src={product.images[currentImage]} alt={product.name} className="w-full h-full object-cover" />
+                <button 
+                  onClick={() => setShow3DViewer(true)}
+                  className="absolute bottom-4 right-4 bg-background/90 backdrop-blur-sm px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
+                >
+                  <Move3D className="w-4 h-4" /> 360° View
+                </button>
               </motion.div>
               <div className="flex gap-2">
                 {product.images.map((img, i) => (
@@ -93,8 +102,21 @@ const ProductDetail = () => {
               </div>
             </div>
           </div>
+          
+          <StyledLooksSection productCategory={product.category} />
         </div>
       </main>
+      
+      <AnimatePresence>
+        {show3DViewer && (
+          <Product3DViewer 
+            productName={product.name}
+            productImage={product.images[currentImage]}
+            onClose={() => setShow3DViewer(false)}
+          />
+        )}
+      </AnimatePresence>
+      
       <Footer />
     </div>
   );
