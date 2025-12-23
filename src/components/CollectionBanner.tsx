@@ -15,7 +15,7 @@ const CollectionBanner = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            <Link to="/shop">
+              <Link to="/shop?category=Hoodies">
               <img
                 src="https://images.unsplash.com/photo-1548712464-dca92c91de31?w=800&auto=format&fit=crop"
                 alt="Premium collection"
@@ -46,7 +46,7 @@ const CollectionBanner = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              <Link to="/shop">
+                <Link to="/shop?category=Jackets">
                 <img
                   src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&auto=format&fit=crop"
                   alt="Street style"
@@ -71,7 +71,7 @@ const CollectionBanner = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              <Link to="/shop">
+              <Link to="/shop?category=Accessories">
                 <img
                   src="https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=800&auto=format&fit=crop"
                   alt="Accessories"

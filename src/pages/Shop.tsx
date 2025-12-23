@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
@@ -7,7 +8,23 @@ import { products, categories } from '@/data/products';
 import { cn } from '@/lib/utils';
 
 const Shop = () => {
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoryFromUrl = searchParams.get('category') || 'All';
+  const [selectedCategory, setSelectedCategory] = useState(categoryFromUrl);
+  
+  useEffect(() => {
+    setSelectedCategory(categoryFromUrl);
+  }, [categoryFromUrl]);
+  
+  const handleCategoryChange = (cat: string) => {
+    setSelectedCategory(cat);
+    if (cat === 'All') {
+      setSearchParams({});
+    } else {
+      setSearchParams({ category: cat });
+    }
+  };
+  
   const filtered = selectedCategory === 'All' ? products : products.filter(p => p.category === selectedCategory);
 
   return (
@@ -24,7 +41,7 @@ const Shop = () => {
             {categories.map(cat => (
               <button
                 key={cat}
-                onClick={() => setSelectedCategory(cat)}
+                onClick={() => handleCategoryChange(cat)}
                 className={cn(
                   "px-4 py-2 text-sm rounded-full transition-colors",
                   selectedCategory === cat ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground hover:bg-secondary/80"
