@@ -1,8 +1,19 @@
 import { motion } from 'framer-motion';
 import { ArrowDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 const HeroSection = () => {
+  const words = ['luxury', 'style', 'fashion', 'street'];
+  const [wordIndex, setWordIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % words.length);
+    }, 3000); // Change word every 3 seconds
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background image */}
@@ -50,7 +61,18 @@ const HeroSection = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.9, duration: 0.8 }}
           >
-            Where luxury craftsmanship meets street culture
+            Where luxury craftsmanship meets{' '}
+            <motion.span
+              key={wordIndex}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.5 }}
+              className="inline-block"
+            >
+              {words[wordIndex]}
+            </motion.span>{' '}
+            culture
           </motion.p>
 
           {/* CTA button */}
@@ -70,7 +92,7 @@ const HeroSection = () => {
 
         {/* Scroll indicator */}
         <motion.div
-          className="absolute bottom-12 left-1/2 -translate-x-1/2"
+          className="absolute bottom-18 left-1/2 -translate-x-1/2"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5, duration: 1 }}
@@ -92,3 +114,4 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
+
