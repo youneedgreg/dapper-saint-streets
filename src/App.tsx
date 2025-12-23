@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/hooks/useCart";
 import { WishlistProvider } from "@/hooks/useWishlist";
 import { ThemeProvider } from "@/hooks/useTheme";
-import LoadingScreen from "@/components/LoadingScreen";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
@@ -30,16 +28,6 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const AppContent = () => {
-  const [loading, setLoading] = useState(true);
-
-  const handleLoadingComplete = () => {
-    setLoading(false);
-  };
-
-  if (loading) {
-    return <LoadingScreen onComplete={handleLoadingComplete} />;
-  }
-
   return (
     <CartProvider>
       <WishlistProvider>

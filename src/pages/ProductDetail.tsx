@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Minus, Plus, Heart, Share2, ChevronLeft, Move3D, Users } from 'lucide-react';
+import { Minus, Plus, Heart, Share2, ChevronLeft, Move3D } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
@@ -103,7 +103,10 @@ const ProductDetail = () => {
             </div>
           </div>
           
-          <StyledLooksSection productCategory={product.category} />
+          <StyledLooksSection 
+            productCategory={product.category} 
+            styledLooks={product.styledLooks}
+          />
         </div>
       </main>
       
@@ -111,7 +114,7 @@ const ProductDetail = () => {
         {show3DViewer && (
           <Product3DViewer 
             productName={product.name}
-            productImage={product.images[currentImage]}
+            images360={product.images360 || []}
             onClose={() => setShow3DViewer(false)}
           />
         )}

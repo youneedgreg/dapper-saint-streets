@@ -1,73 +1,77 @@
-# Welcome to your Lovable project
+# DAPPER SAINT - Premium Streetwear E-Commerce
 
-## Project info
+A modern, luxury streetwear e-commerce platform built with React, TypeScript, and Tailwind CSS.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Features
 
-## How can I edit this code?
+### Customer Features
+- **Product Catalog**: Browse premium streetwear with filtering by category
+- **360° Product View**: Interactive rotation view of products with zoom controls
+- **See It Styled**: Inspiration gallery showing products on models (clickable lightbox)
+- **Shopping Cart**: Add/remove items with size and color selection
+- **Wishlist**: Save favorite items for later
+- **Responsive Design**: Optimized for mobile, tablet, and desktop
 
-There are several ways of editing your application.
+### Admin Features
+- **Full Product CRUD**: Create, read, update, and delete products
+- **360° Image Management**: Upload multiple angles for 360° viewer
+- **Styled Looks Management**: Upload inspiration photos linking to products
+- **Order Management**: View and manage customer orders
+- **Customer Analytics**: Track sales and customer data
 
-**Use Lovable**
+## Tech Stack
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+- **Frontend**: React 18, TypeScript, Vite
+- **Styling**: Tailwind CSS, shadcn/ui components
+- **Animations**: Framer Motion
+- **State Management**: React Context (Cart, Wishlist, Theme)
+- **Routing**: React Router v6
+- **Database**: Supabase (PostgreSQL) - see schema.sql
 
-Changes made via Lovable will be committed automatically to this repo.
+## Database Schema
 
-**Use your preferred IDE**
+Key tables include:
+- `products` - Product catalog with images, 360° images, pricing
+- `styled_looks` - Admin-uploaded inspiration photos
+- `categories` - Product categories
+- `orders` / `order_items` - Order management
+- `profiles` / `user_roles` - User authentication and roles
+- `wishlist` / `reviews` - Customer engagement
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Getting Started
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Install dependencies
+npm install
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
+
+# Build for production
+npm run build
 ```
 
-**Edit a file directly in GitHub**
+## Project Structure
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```
+src/
+├── components/          # Reusable UI components
+│   ├── admin/          # Admin-specific components
+│   ├── ui/             # shadcn/ui components
+│   └── ...             # Feature components
+├── data/               # Static product data (before Supabase)
+├── hooks/              # Custom React hooks
+├── lib/                # Utility functions
+├── pages/              # Page components
+└── assets/             # Static assets
+supabase/
+└── schema.sql          # Database schema
+```
 
-**Use GitHub Codespaces**
+## Deployment
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Deploy via Lovable: Open the project and click Share → Publish.
 
-## What technologies are used for this project?
+## License
 
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Private - DAPPER SAINT © 2024

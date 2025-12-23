@@ -1,3 +1,11 @@
+export interface StyledLook {
+  id: string;
+  image: string;
+  title: string;
+  description: string;
+  productIds?: string[];
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -6,12 +14,56 @@ export interface Product {
   category: string;
   description: string;
   images: string[];
+  images360?: string[];  // 360° view images
+  styledLooks?: StyledLook[];  // Styled looks for this product
   colors: { name: string; hex: string }[];
   sizes: string[];
   tags: string[];
   isNew?: boolean;
   isBestSeller?: boolean;
 }
+
+// Dummy 360 images - to be replaced with admin uploads
+const dummy360Images = [
+  "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=800&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=800&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&auto=format&fit=crop",
+];
+
+// Dummy styled looks - to be replaced with admin uploads
+const dummyStyledLooks: StyledLook[] = [
+  {
+    id: "look-1",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop",
+    title: "Street Ready",
+    description: "Casual downtown vibes",
+    productIds: ["1", "4"]
+  },
+  {
+    id: "look-2",
+    image: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=800&auto=format&fit=crop",
+    title: "Urban Edge",
+    description: "Bold city aesthetic",
+    productIds: ["3", "5"]
+  },
+  {
+    id: "look-3",
+    image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&auto=format&fit=crop",
+    title: "Night Out",
+    description: "Evening sophistication",
+    productIds: ["2", "8"]
+  },
+  {
+    id: "look-4",
+    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop",
+    title: "Weekend Casual",
+    description: "Effortless style",
+    productIds: ["6", "10"]
+  }
+];
 
 export const products: Product[] = [
   {
@@ -25,6 +77,8 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=800&auto=format&fit=crop"
     ],
+    images360: dummy360Images,
+    styledLooks: dummyStyledLooks.slice(0, 2),
     colors: [
       { name: "Obsidian", hex: "#0A0A0A" },
       { name: "Ivory", hex: "#FAFAFA" },
@@ -45,6 +99,8 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&auto=format&fit=crop"
     ],
+    images360: dummy360Images,
+    styledLooks: dummyStyledLooks.slice(1, 3),
     colors: [
       { name: "Black", hex: "#0A0A0A" },
       { name: "White", hex: "#FFFFFF" },
@@ -64,6 +120,8 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&auto=format&fit=crop"
     ],
+    images360: dummy360Images,
+    styledLooks: dummyStyledLooks.slice(0, 3),
     colors: [
       { name: "Midnight", hex: "#0D1117" },
       { name: "Olive", hex: "#3D4F2F" },
@@ -83,6 +141,8 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=800&auto=format&fit=crop"
     ],
+    images360: dummy360Images,
+    styledLooks: dummyStyledLooks.slice(2, 4),
     colors: [
       { name: "Black", hex: "#0A0A0A" },
       { name: "Grey", hex: "#4A4A4A" },
@@ -101,6 +161,8 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1534215754734-18e55d13e346?w=800&auto=format&fit=crop"
     ],
+    images360: dummy360Images,
+    styledLooks: dummyStyledLooks,
     colors: [
       { name: "Black", hex: "#0A0A0A" },
       { name: "White", hex: "#FFFFFF" },
@@ -119,6 +181,8 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1578587018452-892bacefd3f2?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&auto=format&fit=crop"
     ],
+    images360: dummy360Images,
+    styledLooks: dummyStyledLooks.slice(0, 2),
     colors: [
       { name: "Heather Grey", hex: "#9CA3AF" },
       { name: "Black", hex: "#0A0A0A" },
@@ -138,6 +202,8 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=800&auto=format&fit=crop"
     ],
+    images360: dummy360Images,
+    styledLooks: dummyStyledLooks.slice(1, 4),
     colors: [
       { name: "Indigo", hex: "#3F51B5" },
       { name: "Washed Black", hex: "#2D2D2D" }
@@ -156,6 +222,8 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&auto=format&fit=crop"
     ],
+    images360: dummy360Images,
+    styledLooks: dummyStyledLooks,
     colors: [
       { name: "Black", hex: "#0A0A0A" },
       { name: "Brown", hex: "#8B4513" }
@@ -174,6 +242,8 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=800&auto=format&fit=crop"
     ],
+    images360: dummy360Images,
+    styledLooks: dummyStyledLooks.slice(0, 3),
     colors: [
       { name: "Matte Black", hex: "#1A1A1A" },
       { name: "Olive", hex: "#556B2F" }
@@ -192,6 +262,8 @@ export const products: Product[] = [
       "https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=800&auto=format&fit=crop"
     ],
+    images360: dummy360Images,
+    styledLooks: dummyStyledLooks.slice(2, 4),
     colors: [
       { name: "Black", hex: "#0A0A0A" },
       { name: "Stone", hex: "#A0917D" },
