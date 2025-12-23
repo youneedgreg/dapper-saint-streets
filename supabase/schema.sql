@@ -132,10 +132,11 @@ create table public.products (
   name text not null,
   slug text not null unique,
   description text,
-  price integer not null, -- Price in cents (KES)
-  original_price integer, -- For sale items
+  price integer not null,
+  original_price integer,
   category_id uuid references public.categories(id) on delete set null,
   images text[] default '{}',
+  images_360 text[] default '{}',  -- 360° view images
   colors text[] default '{}',
   sizes text[] default '{}',
   tags text[] default '{}',
@@ -156,6 +157,31 @@ create policy "Anyone can view active products"
 
 create policy "Admins can manage products"
   on public.products for all
+  using (public.has_role(auth.uid(), 'admin'));
+
+-- =============================================
+-- STYLED LOOKS (Admin-uploaded inspiration photos)
+-- =============================================
+
+create table public.styled_looks (
+  id uuid primary key default gen_random_uuid(),
+  image_url text not null,
+  title text not null,
+  description text,
+  product_ids uuid[] default '{}',
+  is_active boolean default true,
+  created_at timestamp with time zone default now()
+);
+
+alter table public.styled_looks enable row level security;
+
+create policy "Anyone can view active styled looks"
+  on public.styled_looks for select
+  to anon, authenticated
+  using (is_active = true);
+
+create policy "Admins can manage styled looks"
+  on public.styled_looks for all
   using (public.has_role(auth.uid(), 'admin'));
 
 -- =============================================
