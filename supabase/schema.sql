@@ -97,7 +97,8 @@ create policy "Users can view own roles"
 
 create policy "Admins can manage roles"
   on public.user_roles for all
-  using (public.has_role(auth.uid(), 'admin'));
+  using (public.has_role(auth.uid(), 'admin'))
+  with check (public.has_role(auth.uid(), 'admin'));
 
 -- =============================================
 -- CATEGORIES
@@ -121,7 +122,8 @@ create policy "Anyone can view categories"
 
 create policy "Admins can manage categories"
   on public.categories for all
-  using (public.has_role(auth.uid(), 'admin'));
+  using (public.has_role(auth.uid(), 'admin'))
+  with check (public.has_role(auth.uid(), 'admin'));
 
 -- =============================================
 -- PRODUCTS
@@ -148,22 +150,37 @@ create table public.products (
   updated_at timestamp with time zone default now()
 );
 
-alter table public.products
-  add constraint colors_require_image_url
-  check (
-    jsonb_typeof(colors) = 'array'
-    and (
-      jsonb_array_length(colors) = 0
-      or (
-        select bool_and(
-          coalesce(color ->> 'name', '') <> ''
-          and coalesce(color ->> 'hex', '') <> ''
-          and coalesce(color ->> 'image_url', '') <> ''
-        )
-        from jsonb_array_elements(colors) color
-      )
-    )
-  );
+-- Trigger function to validate colors JSONB structure
+create or replace function public.validate_product_colors()
+returns trigger
+language plpgsql
+as $$
+begin
+  -- Check if colors is an array
+  if jsonb_typeof(new.colors) <> 'array' then
+    raise exception 'colors must be a JSON array';
+  end if;
+
+  -- If colors array is not empty, validate each color object
+  if jsonb_array_length(new.colors) > 0 then
+    if exists (
+      select 1
+      from jsonb_array_elements(new.colors) color
+      where coalesce(color ->> 'name', '') = ''
+         or coalesce(color ->> 'hex', '') = ''
+         or coalesce(color ->> 'image_url', '') = ''
+    ) then
+      raise exception 'each color must have name, hex, and image_url properties';
+    end if;
+  end if;
+
+  return new;
+end;
+$$;
+
+create trigger validate_product_colors_trigger
+  before insert or update on public.products
+  for each row execute function public.validate_product_colors();
 
 alter table public.products enable row level security;
 
@@ -174,7 +191,8 @@ create policy "Anyone can view active products"
 
 create policy "Admins can manage products"
   on public.products for all
-  using (public.has_role(auth.uid(), 'admin'));
+  using (public.has_role(auth.uid(), 'admin'))
+  with check (public.has_role(auth.uid(), 'admin'));
 
 -- =============================================
 -- STYLED LOOKS (Admin-uploaded inspiration photos)
@@ -199,7 +217,8 @@ create policy "Anyone can view active styled looks"
 
 create policy "Admins can manage styled looks"
   on public.styled_looks for all
-  using (public.has_role(auth.uid(), 'admin'));
+  using (public.has_role(auth.uid(), 'admin'))
+  with check (public.has_role(auth.uid(), 'admin'));
 
 -- =============================================
 -- LOOKBOOK ITEMS (Admin-managed editorial/lookbook photos)
@@ -227,7 +246,8 @@ create policy "Anyone can view active lookbook items"
 
 create policy "Admins can manage lookbook items"
   on public.lookbook_items for all
-  using (public.has_role(auth.uid(), 'admin'));
+  using (public.has_role(auth.uid(), 'admin'))
+  with check (public.has_role(auth.uid(), 'admin'));
 
 create index idx_lookbook_items_is_active on public.lookbook_items(is_active);
 create index idx_lookbook_items_display_order on public.lookbook_items(display_order);
@@ -253,7 +273,8 @@ alter table public.addresses enable row level security;
 
 create policy "Users can manage own addresses"
   on public.addresses for all
-  using (auth.uid() = user_id);
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
 
 -- =============================================
 -- ORDERS
@@ -289,7 +310,8 @@ create policy "Users can create orders"
 
 create policy "Admins can manage all orders"
   on public.orders for all
-  using (public.has_role(auth.uid(), 'admin'));
+  using (public.has_role(auth.uid(), 'admin'))
+  with check (public.has_role(auth.uid(), 'admin'));
 
 -- Generate order number
 create or replace function public.generate_order_number()
@@ -348,7 +370,8 @@ create policy "Users can create order items"
 
 create policy "Admins can manage all order items"
   on public.order_items for all
-  using (public.has_role(auth.uid(), 'admin'));
+  using (public.has_role(auth.uid(), 'admin'))
+  with check (public.has_role(auth.uid(), 'admin'));
 
 -- =============================================
 -- WISHLIST
@@ -366,7 +389,8 @@ alter table public.wishlist enable row level security;
 
 create policy "Users can manage own wishlist"
   on public.wishlist for all
-  using (auth.uid() = user_id);
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
 
 -- =============================================
 -- REVIEWS
@@ -438,7 +462,8 @@ alter table public.cart enable row level security;
 
 create policy "Users can manage own cart"
   on public.cart for all
-  using (auth.uid() = user_id);
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
 
 create index idx_cart_user on public.cart(user_id);
 
@@ -463,7 +488,8 @@ create policy "Anyone can subscribe to newsletter"
 
 create policy "Admins can manage newsletter subscriptions"
   on public.newsletter_subscriptions for all
-  using (public.has_role(auth.uid(), 'admin'));
+  using (public.has_role(auth.uid(), 'admin'))
+  with check (public.has_role(auth.uid(), 'admin'));
 
 create index idx_newsletter_email on public.newsletter_subscriptions(email);
 create index idx_newsletter_active on public.newsletter_subscriptions(is_active);
@@ -492,7 +518,8 @@ create policy "Anyone can send contact messages"
 
 create policy "Admins can manage contact messages"
   on public.contact_messages for all
-  using (public.has_role(auth.uid(), 'admin'));
+  using (public.has_role(auth.uid(), 'admin'))
+  with check (public.has_role(auth.uid(), 'admin'));
 
 create index idx_contact_messages_is_read on public.contact_messages(is_read);
 create index idx_contact_messages_created_at on public.contact_messages(created_at);
@@ -524,7 +551,7 @@ create policy "Users can update own notifications"
 
 create policy "Admins can create notifications"
   on public.notifications for insert
-  using (public.has_role(auth.uid(), 'admin'));
+  with check (public.has_role(auth.uid(), 'admin'));
 
 create index idx_notifications_user on public.notifications(user_id);
 create index idx_notifications_is_read on public.notifications(is_read);
@@ -604,7 +631,8 @@ create policy "Anyone can view active coupons"
 
 create policy "Admins can manage coupons"
   on public.coupons for all
-  using (public.has_role(auth.uid(), 'admin'));
+  using (public.has_role(auth.uid(), 'admin'))
+  with check (public.has_role(auth.uid(), 'admin'));
 
 create index idx_coupons_code on public.coupons(code);
 create index idx_coupons_is_active on public.coupons(is_active);
@@ -630,7 +658,8 @@ create policy "Users can view own coupon usage"
 
 create policy "Admins can manage coupon usage"
   on public.coupon_usage for all
-  using (public.has_role(auth.uid(), 'admin'));
+  using (public.has_role(auth.uid(), 'admin'))
+  with check (public.has_role(auth.uid(), 'admin'));
 
 create index idx_coupon_usage_coupon on public.coupon_usage(coupon_id);
 create index idx_coupon_usage_user on public.coupon_usage(user_id);
@@ -665,7 +694,8 @@ create policy "Users can view own payment transactions"
 
 create policy "Admins can manage payment transactions"
   on public.payment_transactions for all
-  using (public.has_role(auth.uid(), 'admin'));
+  using (public.has_role(auth.uid(), 'admin'))
+  with check (public.has_role(auth.uid(), 'admin'));
 
 create index idx_payment_transactions_order on public.payment_transactions(order_id);
 create index idx_payment_transactions_status on public.payment_transactions(status);
