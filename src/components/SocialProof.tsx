@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
 
 const pressLogos = [
-  { name: "Vogue", text: "VOGUE" },
-  { name: "GQ", text: "GQ" },
-  { name: "Hypebeast", text: "HYPEBEAST" },
+  { name: "ABANTU", text: "ABANTU" },
+  { name: "XFEST", text: "XFEST" },
+  { name: "ELITE", text: "ELITE" },
   { name: "Complex", text: "COMPLEX" },
 ];
 
