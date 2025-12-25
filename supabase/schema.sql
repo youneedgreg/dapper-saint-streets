@@ -137,7 +137,7 @@ create table public.products (
   category_id uuid references public.categories(id) on delete set null,
   images text[] default '{}',
   images_360 text[] default '{}',  -- 360° view images
-  colors jsonb default '[]',  -- Array of {name: string, hex: string}
+  colors jsonb default '[]',  -- Array of {name: string, hex: string, image_url: string}
   sizes text[] default '{}',
   tags text[] default '{}',
   stock integer default 0,
@@ -150,6 +150,23 @@ create table public.products (
   cropped_image_url VARCHAR,
   is_cropped BOOLEAN DEFAULT FALSE
 );
+
+alter table public.products
+  add constraint colors_require_image_url
+  check (
+    jsonb_typeof(colors) = 'array'
+    and (
+      jsonb_array_length(colors) = 0
+      or (
+        select bool_and(
+          coalesce(color ->> 'name', '') <> ''
+          and coalesce(color ->> 'hex', '') <> ''
+          and coalesce(color ->> 'image_url', '') <> ''
+        )
+        from jsonb_array_elements(colors) color
+      )
+    )
+  );
 
 alter table public.products enable row level security;
 

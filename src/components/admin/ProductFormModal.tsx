@@ -27,7 +27,7 @@ interface ProductFormData {
   originalPrice: number | null;
   category: string;
   images: string[];
-  colors: string[];
+  colors: { name: string; hex: string; image: string }[];
   sizes: string[];
   tags: string[];
   stock: number;
@@ -62,15 +62,19 @@ const defaultProduct: ProductFormData = {
 
 const categories = ['Shirts', 'Jackets', 'Pants', 'Accessories', 'Footwear'];
 const availableSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-const availableColors = ['Black', 'White', 'Navy', 'Grey', 'Brown', 'Beige', 'Olive', 'Burgundy'];
 
 const ProductFormModal = ({ open, onOpenChange, product, onSubmit }: ProductFormModalProps) => {
   const [formData, setFormData] = useState<ProductFormData>(product || defaultProduct);
   const [newImageUrl, setNewImageUrl] = useState('');
   const [newTag, setNewTag] = useState('');
+  const [newColor, setNewColor] = useState({ name: '', hex: '#000000', image: '' });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (formData.colors.some(color => !color.name.trim() || !color.hex.trim() || !color.image.trim())) {
+      alert('Each color must include a name, hex value, and image URL.');
+      return;
+    }
     onSubmit(formData);
     onOpenChange(false);
   };
@@ -99,13 +103,20 @@ const ProductFormModal = ({ open, onOpenChange, product, onSubmit }: ProductForm
     });
   };
 
-  const toggleColor = (color: string) => {
+  const addColor = () => {
+    const trimmedName = newColor.name.trim();
+    if (!trimmedName || !newColor.hex.trim() || !newColor.image.trim()) return;
+    if (formData.colors.some(c => c.name.toLowerCase() === trimmedName.toLowerCase())) return;
+
     setFormData({
       ...formData,
-      colors: formData.colors.includes(color)
-        ? formData.colors.filter(c => c !== color)
-        : [...formData.colors, color]
+      colors: [...formData.colors, { name: trimmedName, hex: newColor.hex.trim(), image: newColor.image.trim() }]
     });
+    setNewColor({ name: '', hex: '#000000', image: '' });
+  };
+
+  const removeColor = (index: number) => {
+    setFormData({ ...formData, colors: formData.colors.filter((_, i) => i !== index) });
   };
 
   const addTag = () => {
@@ -268,23 +279,47 @@ const ProductFormModal = ({ open, onOpenChange, product, onSubmit }: ProductForm
 
           {/* Colors */}
           <div className="space-y-2">
-            <Label>Colors</Label>
-            <div className="flex flex-wrap gap-2">
-              {availableColors.map(color => (
-                <button
-                  key={color}
-                  type="button"
-                  onClick={() => toggleColor(color)}
-                  className={`px-3 py-1 border rounded text-sm transition-colors ${
-                    formData.colors.includes(color)
-                      ? 'bg-primary text-primary-foreground border-primary'
-                      : 'border-border hover:border-primary'
-                  }`}
-                >
-                  {color}
-                </button>
-              ))}
+            <Label>Colors (image required when added)</Label>
+            <div className="grid md:grid-cols-3 gap-2">
+              <Input
+                value={newColor.name}
+                onChange={(e) => setNewColor({ ...newColor, name: e.target.value })}
+                placeholder="Color name"
+              />
+              <Input
+                type="color"
+                value={newColor.hex}
+                onChange={(e) => setNewColor({ ...newColor, hex: e.target.value })}
+              />
+              <div className="flex gap-2">
+                <Input
+                  value={newColor.image}
+                  onChange={(e) => setNewColor({ ...newColor, image: e.target.value })}
+                  placeholder="Image URL"
+                />
+                <Button type="button" variant="outline" onClick={addColor}>
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
+            {formData.colors.length > 0 && (
+              <div className="grid gap-2">
+                {formData.colors.map((color, idx) => (
+                  <div key={`${color.name}-${idx}`} className="flex items-center justify-between border border-border rounded px-3 py-2">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <span className="w-6 h-6 rounded-full border border-border shrink-0" style={{ backgroundColor: color.hex }} />
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium">{color.name}</span>
+                        <span className="text-xs text-muted-foreground break-all">{color.image}</span>
+                      </div>
+                    </div>
+                    <Button type="button" variant="ghost" size="icon" onClick={() => removeColor(idx)}>
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Tags */}
