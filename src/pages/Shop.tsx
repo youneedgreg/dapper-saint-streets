@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
@@ -135,24 +136,24 @@ const Shop = () => {
           <div className="flex gap-2">
             <div className="flex-1">
               <Label htmlFor="minPrice" className="text-xs">Min</Label>
-              <input
+              <Input
                 id="minPrice"
                 type="number"
                 value={priceRange[0]}
                 onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
-                className="w-full px-3 py-2 text-sm border rounded-md"
+                className="h-9 text-sm"
                 min="0"
                 max={priceRange[1]}
               />
             </div>
             <div className="flex-1">
               <Label htmlFor="maxPrice" className="text-xs">Max</Label>
-              <input
+              <Input
                 id="maxPrice"
                 type="number"
                 value={priceRange[1]}
                 onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
-                className="w-full px-3 py-2 text-sm border rounded-md"
+                className="h-9 text-sm"
                 min={priceRange[0]}
               />
             </div>
