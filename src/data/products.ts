@@ -19,6 +19,8 @@ export interface Product {
   colors: { name: string; hex: string; image: string }[];
   sizes: string[];
   tags: string[];
+  croppedImage?: string;  // Cropped version of product
+  isCropped?: boolean;  // Whether cropped image is available
   isNew?: boolean;
   isBestSeller?: boolean;
   isFeatured?: boolean;
