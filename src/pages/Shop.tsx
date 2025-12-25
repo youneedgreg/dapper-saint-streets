@@ -228,10 +228,10 @@ const Shop = () => {
           {/* Filters and Sort Bar */}
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-8 pb-4 border-b">
             <div className="flex items-center gap-4">
-              {/* Mobile Filter Button */}
+              {/* Filter Button */}
               <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="outline" size="sm" className="md:hidden">
+                  <Button variant="outline" size="sm">
                     <Filter className="h-4 w-4 mr-2" />
                     Filters
                     {activeFiltersCount > 0 && (
@@ -261,22 +261,6 @@ const Shop = () => {
                   </div>
                 </SheetContent>
               </Sheet>
-
-              {/* Desktop Filters */}
-              <div className="hidden md:block">
-                <FilterContent
-                  showOnSale={showOnSale}
-                  setShowOnSale={setShowOnSale}
-                  showNew={showNew}
-                  setShowNew={setShowNew}
-                  showBestSellers={showBestSellers}
-                  setShowBestSellers={setShowBestSellers}
-                  priceRange={priceRange}
-                  setPriceRange={setPriceRange}
-                  activeFiltersCount={activeFiltersCount}
-                  clearFilters={clearFilters}
-                />
-              </div>
             </div>
 
             {/* Sort and Results */}
