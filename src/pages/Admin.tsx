@@ -14,7 +14,8 @@ import {
   Plus,
   Search,
   Filter,
-  BarChart3
+  BarChart3,
+  Image
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { products } from '@/data/products';
@@ -31,11 +32,13 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import ProductFormModal from '@/components/admin/ProductFormModal';
+import LookbookFormModal from '@/components/admin/LookbookFormModal';
 import { useToast } from '@/hooks/use-toast';
 
 const sidebarLinks = [
   { name: 'Dashboard', icon: LayoutDashboard, id: 'dashboard' },
   { name: 'Products', icon: Package, id: 'products' },
+  { name: 'Lookbook', icon: Image, id: 'lookbook' },
   { name: 'Orders', icon: ShoppingCart, id: 'orders' },
   { name: 'Customers', icon: Users, id: 'customers' },
   { name: 'Analytics', icon: BarChart3, id: 'analytics' },
@@ -57,11 +60,19 @@ const mockCustomers = [
   { id: 4, name: 'Sarah Wilson', email: 'sarah@example.com', orders: 2, spent: 52000 },
 ];
 
+const mockLookbookItems = [
+  { id: '1', image_url: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1200&auto=format&fit=crop', title: 'Urban Edge', collection: 'Essentials', description: 'Street style essentials', display_order: 1, is_active: true },
+  { id: '2', image_url: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1200&auto=format&fit=crop', title: 'Street Royalty', collection: 'Premium', description: 'Premium street wear', display_order: 2, is_active: true },
+  { id: '3', image_url: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=1200&auto=format&fit=crop', title: 'Dark Dynasty', collection: 'Signature', description: 'Signature dark collection', display_order: 3, is_active: true },
+];
+
 const Admin = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [lookbookModalOpen, setLookbookModalOpen] = useState(false);
+  const [editingLookbookItem, setEditingLookbookItem] = useState<any>(null);
   const { toast } = useToast();
 
   const handleProductSubmit = (data: any) => {
@@ -82,6 +93,27 @@ const Admin = () => {
     toast({
       title: "Delete Product",
       description: "Connect Supabase to enable product deletion.",
+      variant: "destructive",
+    });
+  };
+
+  const handleLookbookSubmit = (data: any) => {
+    toast({
+      title: editingLookbookItem ? "Lookbook Item Updated" : "Lookbook Item Added",
+      description: `${data.title} has been ${editingLookbookItem ? 'updated' : 'added'} successfully. Connect Supabase to persist.`,
+    });
+    setEditingLookbookItem(null);
+  };
+
+  const handleEditLookbookItem = (item: any) => {
+    setEditingLookbookItem(item);
+    setLookbookModalOpen(true);
+  };
+
+  const handleDeleteLookbookItem = (itemId: string) => {
+    toast({
+      title: "Delete Lookbook Item",
+      description: "Connect Supabase to enable lookbook item deletion.",
       variant: "destructive",
     });
   };
@@ -322,6 +354,102 @@ const Admin = () => {
                               <Edit className="w-4 h-4" />
                             </Button>
                             <Button variant="ghost" size="sm" className="text-destructive">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Lookbook content */}
+          {activeTab === 'lookbook' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input placeholder="Search lookbook..." className="pl-10 w-64" />
+                  </div>
+                  <Button variant="outline" size="sm">
+                    <Filter className="w-4 h-4 mr-2" />
+                    Filter
+                  </Button>
+                </div>
+                <Button onClick={() => { setEditingLookbookItem(null); setLookbookModalOpen(true); }}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Lookbook Item
+                </Button>
+              </div>
+
+              <LookbookFormModal
+                open={lookbookModalOpen}
+                onOpenChange={setLookbookModalOpen}
+                lookbookItem={editingLookbookItem}
+                onSubmit={handleLookbookSubmit}
+              />
+
+              <div className="bg-card rounded-lg border border-border overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Image</TableHead>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Collection</TableHead>
+                      <TableHead>Display Order</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {mockLookbookItems.map(item => (
+                      <TableRow key={item.id}>
+                        <TableCell>
+                          <img
+                            src={item.image_url}
+                            alt={item.title}
+                            className="w-20 h-20 object-cover rounded"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{item.title}</p>
+                            {item.description && (
+                              <p className="text-sm text-muted-foreground line-clamp-1">
+                                {item.description}
+                              </p>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>{item.collection}</TableCell>
+                        <TableCell>{item.display_order}</TableCell>
+                        <TableCell>
+                          <span className={cn(
+                            "px-2 py-1 rounded-full text-xs font-medium",
+                            item.is_active ? "bg-green-500/10 text-green-500" : "bg-muted text-muted-foreground"
+                          )}>
+                            {item.is_active ? 'Active' : 'Inactive'}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <Button variant="ghost" size="sm" onClick={() => handleEditLookbookItem(item)}>
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-destructive"
+                              onClick={() => handleDeleteLookbookItem(item.id)}
+                            >
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>

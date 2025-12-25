@@ -186,6 +186,36 @@ create policy "Admins can manage styled looks"
   using (public.has_role(auth.uid(), 'admin'));
 
 -- =============================================
+-- LOOKBOOK ITEMS (Admin-managed editorial/lookbook photos)
+-- =============================================
+
+create table public.lookbook_items (
+  id uuid primary key default gen_random_uuid(),
+  image_url text not null,
+  title text not null,
+  collection text,
+  description text,
+  display_order integer default 0,
+  is_active boolean default true,
+  created_at timestamp with time zone default now(),
+  updated_at timestamp with time zone default now()
+);
+
+alter table public.lookbook_items enable row level security;
+
+create policy "Anyone can view active lookbook items"
+  on public.lookbook_items for select
+  to anon, authenticated
+  using (is_active = true);
+
+create policy "Admins can manage lookbook items"
+  on public.lookbook_items for all
+  using (public.has_role(auth.uid(), 'admin'));
+
+create index idx_lookbook_items_is_active on public.lookbook_items(is_active);
+create index idx_lookbook_items_display_order on public.lookbook_items(display_order);
+
+-- =============================================
 -- ADDRESSES
 -- =============================================
 
@@ -511,6 +541,10 @@ create trigger update_orders_updated_at
 
 create trigger update_cart_updated_at
   before update on public.cart
+  for each row execute procedure public.update_updated_at();
+
+create trigger update_lookbook_items_updated_at
+  before update on public.lookbook_items
   for each row execute procedure public.update_updated_at();
 
 -- =============================================
