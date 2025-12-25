@@ -112,6 +112,7 @@ const ProductDetail = () => {
           </div>
           
           <StyledLooksSection 
+            productId={id}
             productCategory={product.category} 
             styledLooks={product.styledLooks}
           />

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { getProductById } from '@/data/products';
 
 interface StyledLook {
   id: string;
@@ -13,45 +14,72 @@ interface StyledLook {
 }
 
 interface StyledLooksSectionProps {
+  productId?: string;
   productCategory: string;
   styledLooks?: StyledLook[];
 }
 
-// Dummy styled looks data - will be replaced with admin-uploaded content
-const dummyStyledLooks: StyledLook[] = [
+// Lookbook items data - will be replaced with admin-uploaded content
+const lookbookItems: StyledLook[] = [
   {
     id: "1",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop",
-    title: "Street Ready",
-    description: "Casual downtown vibes with layered streetwear",
-    productIds: ["1", "4"]
+    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=800&auto=format&fit=crop",
+    title: "Urban Edge",
+    description: "Street style essentials",
+    productIds: ['1', '4']
   },
   {
     id: "2",
-    image: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=800&auto=format&fit=crop",
-    title: "Urban Edge",
-    description: "Bold city aesthetic for the modern trendsetter",
-    productIds: ["3", "5"]
+    image: "https://images.unsplash.com/photo-1507680434567-5739c80be1ac?w=800&auto=format&fit=crop",
+    title: "Street Royalty",
+    description: "Premium street wear",
+    productIds: ['2', '5']
   },
   {
     id: "3",
-    image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&auto=format&fit=crop",
-    title: "Night Out",
-    description: "Evening sophistication meets street style",
-    productIds: ["2", "8"]
+    image: "https://images.unsplash.com/photo-1516826957135-700dedea698c?w=800&auto=format&fit=crop",
+    title: "Dark Dynasty",
+    description: "Signature dark collection",
+    productIds: ['3', '6']
   },
   {
     id: "4",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop",
-    title: "Weekend Casual",
-    description: "Effortless style for relaxed days",
-    productIds: ["6", "10"]
+    image: "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=1200&auto=format&fit=crop",
+    title: "Golden Hour",
+    description: "Luxe collection",
+    productIds: ['7', '8']
+  },
+  {
+    id: "5",
+    image: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=1200&auto=format&fit=crop",
+    title: "Night Reign",
+    description: "After dark vibes",
+    productIds: ['9', '10']
+  },
+  {
+    id: "6",
+    image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1200&auto=format&fit=crop",
+    title: "Crown Collection",
+    description: "Royal aesthetics",
+    productIds: ['1', '3']
   }
 ];
 
-const StyledLooksSection = ({ productCategory, styledLooks }: StyledLooksSectionProps) => {
+const StyledLooksSection = ({ productId, productCategory, styledLooks }: StyledLooksSectionProps) => {
   const [selectedLook, setSelectedLook] = useState<StyledLook | null>(null);
-  const looks = styledLooks && styledLooks.length > 0 ? styledLooks : dummyStyledLooks;
+  
+  // If productId is provided, filter lookbook items that contain this product
+  let looks: StyledLook[];
+  if (productId) {
+    looks = lookbookItems.filter(item => item.productIds?.includes(productId));
+  } else {
+    looks = styledLooks && styledLooks.length > 0 ? styledLooks : lookbookItems;
+  }
+
+  // If no looks match, show all lookbook items
+  if (looks.length === 0) {
+    looks = lookbookItems;
+  }
 
   return (
     <section className="mt-16 border-t border-border pt-12">
@@ -126,17 +154,23 @@ const StyledLooksSection = ({ productCategory, styledLooks }: StyledLooksSection
                     <p className="text-sm font-semibold">Shop This Look</p>
                     {selectedLook.productIds && selectedLook.productIds.length > 0 ? (
                       <div className="space-y-2">
-                        {selectedLook.productIds.map(productId => (
-                          <Link 
-                            key={productId}
-                            to={`/product/${productId}`}
-                            className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
-                            onClick={() => setSelectedLook(null)}
-                          >
-                            <ShoppingBag className="w-4 h-4 text-primary" />
-                            <span className="text-sm">View Product #{productId}</span>
-                          </Link>
-                        ))}
+                        {selectedLook.productIds.map(pId => {
+                          const linkedProduct = getProductById(pId);
+                          return linkedProduct ? (
+                            <Link 
+                              key={pId}
+                              to={`/product/${pId}`}
+                              className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
+                              onClick={() => setSelectedLook(null)}
+                            >
+                              <ShoppingBag className="w-4 h-4 text-primary flex-shrink-0" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium truncate">{linkedProduct.name}</p>
+                                <p className="text-xs text-muted-foreground">{linkedProduct.category}</p>
+                              </div>
+                            </Link>
+                          ) : null;
+                        })}
                       </div>
                     ) : (
                       <p className="text-sm text-muted-foreground">No products linked to this look yet.</p>
