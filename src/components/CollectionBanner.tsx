@@ -17,7 +17,7 @@ const CollectionBanner = () => {
           >
               <Link to="/shop?category=Hoodies">
               <img
-                src="https://images.unsplash.com/photo-1548712464-dca92c91de31?w=800&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1523398002811-999ca8dec234?w=800&h=1000&auto=format&fit=crop"
                 alt="Premium collection"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
               />
