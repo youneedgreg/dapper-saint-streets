@@ -1,5 +1,5 @@
 -- =============================================
--- DAPPER SAINT E-Commerce Database Schema
+-- DAPPER SAINTE E-Commerce Database Schema
 -- =============================================
 
 -- Enable UUID extension

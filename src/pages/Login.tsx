@@ -46,7 +46,7 @@ const Login = () => {
             Welcome Back
           </h2>
           <p className="text-white/70 text-sm max-w-md">
-            Sign in to access your account, track orders, and continue your journey with Dapper Saint.
+            Sign in to access your account, track orders, and continue your journey with Dapper Sainte.
           </p>
         </div>
       </motion.div>
@@ -61,7 +61,7 @@ const Login = () => {
         >
           {/* Logo */}
           <Link to="/" className="block mb-16">
-            <span className="font-display text-2xl tracking-wider">Dapper Saint</span>
+            <span className="font-display text-2xl tracking-wider">Dapper Sainte</span>
           </Link>
 
           <div className="mb-12">

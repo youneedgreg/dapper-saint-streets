@@ -46,7 +46,7 @@ const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
         >
           <img
             src={logo}
-            alt="Dapper Saint"
+            alt="Dapper Sainte"
             className="w-24 h-auto md:w-32"
           />
         </motion.div>

@@ -21,7 +21,7 @@ const TermsOfService = () => {
             <section className="mb-8">
               <h2 className="font-display text-2xl font-bold mb-4">1. Acceptance of Terms</h2>
               <p className="text-muted-foreground leading-relaxed">
-                By accessing and using Dapper Saint, you accept and agree to be bound by the terms 
+                By accessing and using Dapper Sainte, you accept and agree to be bound by the terms 
                 and provision of this agreement. If you do not agree to abide by these terms, 
                 please do not use this service.
               </p>
@@ -63,7 +63,7 @@ const TermsOfService = () => {
             <section className="mb-8">
               <h2 className="font-display text-2xl font-bold mb-4">6. Contact</h2>
               <p className="text-muted-foreground leading-relaxed">
-                For questions about these terms, contact us at legal@dappersaint.com.
+                For questions about these terms, contact us at legal@dappersainte.com.
               </p>
             </section>
           </motion.div>

@@ -29,7 +29,7 @@ const Register = () => {
       setIsLoading(false);
       toast({
         title: "Account created",
-        description: "Welcome to Dapper Saint.",
+        description: "Welcome to Dapper Sainte.",
       });
     }, 1500);
   };
@@ -46,7 +46,7 @@ const Register = () => {
         >
           {/* Logo */}
           <Link to="/" className="block mb-16">
-            <span className="font-display text-2xl tracking-wider">Dapper Saint</span>
+            <span className="font-display text-2xl tracking-wider">Dapper Sainte</span>
           </Link>
 
           <div className="mb-12">

@@ -58,7 +58,7 @@ const PrivacyPolicy = () => {
               <h2 className="font-display text-2xl font-bold mb-4">5. Contact Us</h2>
               <p className="text-muted-foreground leading-relaxed">
                 If you have any questions about this Privacy Policy, please contact us at 
-                privacy@dappersaint.com.
+                privacy@dappersainte.com.
               </p>
             </section>
           </motion.div>

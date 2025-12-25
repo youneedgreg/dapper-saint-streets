@@ -40,7 +40,7 @@ const FAQ = () => {
     },
     {
       question: "How do I contact customer support?",
-      answer: "You can reach us via email at support@dappersaint.com, call us at +254 712 345 678, or use the contact form on our website. We respond within 24 hours."
+      answer: "You can reach us via email at support@dappersainte.com, call us at +254 712 345 678, or use the contact form on our website. We respond within 24 hours."
     }
   ];
 

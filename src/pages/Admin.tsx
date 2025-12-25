@@ -141,7 +141,7 @@ const Admin = () => {
                 sidebarOpen ? "text-xl" : "text-sm text-center"
               )}>
                 {sidebarOpen ? (
-                  <>DAPPER<span className="text-gradient-gold ml-1">SAINT</span></>
+                  <>DAPPER<span className="text-gradient-gold ml-1">SAINTE</span></>
                 ) : (
                   <span className="text-gradient-gold">DS</span>
                 )}
@@ -612,11 +612,11 @@ const Admin = () => {
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Store Name</label>
-                    <Input defaultValue="Dapper Saint" />
+                    <Input defaultValue="Dapper Sainte" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Store Email</label>
-                    <Input defaultValue="hello@dappersaint.com" />
+                    <Input defaultValue="hello@dappersainte.com" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Currency</label>

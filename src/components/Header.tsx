@@ -77,7 +77,7 @@ const Header = () => {
               <Link to="/" className="absolute left-1/2 -translate-x-1/2 z-10">
                 <img 
                   src={logo} 
-                  alt="Dapper Saint" 
+                  alt="Dapper Sainte" 
                   className="h-10 w-auto"
                 />
               </Link>
@@ -170,7 +170,7 @@ const Header = () => {
                 <div className="flex items-center justify-between p-6 border-b border-border">
                   <img 
                     src={logo} 
-                    alt="Dapper Saint" 
+                    alt="Dapper Sainte" 
                     className="h-8 w-auto"
                   />
                   <button

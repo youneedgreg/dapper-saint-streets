@@ -51,7 +51,7 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            Dapper Saint
+            Dapper Sainte
           </motion.h1>
 
           {/* Subheading */}

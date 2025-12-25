@@ -123,7 +123,7 @@ const Lookbook = () => {
               </h2>
               <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
                 Each piece from the lookbook is available for purchase. 
-                Elevate your wardrobe with Dapper Saint.
+                Elevate your wardrobe with Dapper Sainte.
               </p>
               <a 
                 href="/shop" 

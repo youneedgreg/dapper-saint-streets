@@ -1,4 +1,4 @@
-# DAPPER SAINT - Premium Streetwear E-Commerce
+# DAPPER SAINTE - Premium Streetwear E-Commerce
 
 A modern, luxury streetwear e-commerce platform built with React, TypeScript, and Tailwind CSS.
 
@@ -74,4 +74,4 @@ Deploy via Lovable: Open the project and click Share → Publish.
 
 ## License
 
-Private - DAPPER SAINT © 2024
+Private - DAPPER SAINTE © 2024

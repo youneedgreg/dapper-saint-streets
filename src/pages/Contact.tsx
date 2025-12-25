@@ -32,7 +32,7 @@ const Contact = () => {
             <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-secondary rounded-lg"><Mail className="w-5 h-5 text-primary" /></div>
-                <div><h3 className="font-semibold mb-1">Email</h3><p className="text-muted-foreground text-sm">hello@dappersaint.com</p></div>
+                <div><h3 className="font-semibold mb-1">Email</h3><p className="text-muted-foreground text-sm">hello@dappersainte.com</p></div>
               </div>
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-secondary rounded-lg"><Phone className="w-5 h-5 text-primary" /></div>

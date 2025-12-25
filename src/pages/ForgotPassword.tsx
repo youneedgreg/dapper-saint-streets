@@ -30,7 +30,7 @@ const ForgotPassword = () => {
       >
         {/* Logo */}
         <Link to="/" className="block mb-16 text-center">
-          <span className="font-display text-2xl tracking-wider">Dapper Saint</span>
+          <span className="font-display text-2xl tracking-wider">Dapper Sainte</span>
         </Link>
 
         {!isSubmitted ? (
