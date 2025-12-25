@@ -5,10 +5,10 @@ import logoLight from '@/assets/logo.png';
 import logoDark from '@/assets/logo-dark.png';
 
 interface LoadingScreenProps {
-  onComplete: () => void;
+  onComplete?: () => void;
 }
 
-const LoadingScreen = ({ onComplete }: LoadingScreenProps) => {
+const LoadingScreen = ({ onComplete = () => {} }: LoadingScreenProps) => {
   const [progress, setProgress] = useState(0);
   const { theme } = useTheme();
   
