@@ -1,13 +1,21 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ShoppingBag, Search, Sun, Moon, User } from 'lucide-react';
+import { Menu, X, ShoppingBag, Search, Sun, Moon, User, LogOut } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { useTheme } from '@/hooks/useTheme';
+import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import logoLight from '@/assets/logo.png';
 import logoDark from '@/assets/logo-dark.png';
 import SearchModal from './SearchModal';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const navLinks = [
   { name: 'Shop', href: '/shop' },
@@ -21,9 +29,16 @@ const Header = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { totalItems, setIsCartOpen } = useCart();
   const { theme, toggleTheme } = useTheme();
+  const { user, signOut, isAdmin } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const logo = theme === 'dark' ? logoLight : logoDark;
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   return (
     <>
@@ -113,13 +128,61 @@ const Header = () => {
                     <Moon className="w-5 h-5" strokeWidth={1.5} />
                   )}
                 </button>
-                <button 
-                  className="p-2 text-foreground hover:text-muted-foreground transition-colors"
-                  aria-label="Search"
-                  onClick={() => setIsSearchOpen(true)}
-                >
-                  <Search className="w-5 h-5" strokeWidth={1.5} />
-                </button>
+                
+                {/* User dropdown */}
+                {user ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className="p-2 text-foreground hover:text-muted-foreground transition-colors"
+                        aria-label="Account"
+                      >
+                        <User className="w-5 h-5" strokeWidth={1.5} />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem asChild>
+                        <Link to="/profile" className="cursor-pointer">
+                          Profile
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/orders" className="cursor-pointer">
+                          Order History
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/wishlist" className="cursor-pointer">
+                          Wishlist
+                        </Link>
+                      </DropdownMenuItem>
+                      {isAdmin && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem asChild>
+                            <Link to="/admin" className="cursor-pointer">
+                              Admin Panel
+                            </Link>
+                          </DropdownMenuItem>
+                        </>
+                      )}
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Sign Out
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <Link
+                    to="/login"
+                    className="p-2 text-foreground hover:text-muted-foreground transition-colors"
+                    aria-label="Account"
+                  >
+                    <User className="w-5 h-5" strokeWidth={1.5} />
+                  </Link>
+                )}
+                n>
                 <Link
                   to="/login"
                   className="p-2 text-foreground hover:text-muted-foreground transition-colors"

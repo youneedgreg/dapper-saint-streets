@@ -1,43 +1,48 @@
 import { motion } from 'framer-motion';
 import { Package, ChevronRight, Search } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { formatPrice } from '@/lib/currency';
+import { useAuth } from '@/contexts/AuthContext';
+import { getOrders } from '@/lib/database';
 
 const OrderHistory = () => {
-  const orders = [
-    {
-      id: 'DS-20240115-0001',
-      date: '2024-01-15',
-      status: 'Delivered',
-      total: 48500,
-      items: [
-        { name: 'Classic Oxford Shirt', quantity: 1, price: 24500, image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=100' },
-        { name: 'Slim Fit Chinos', quantity: 1, price: 24000, image: 'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=100' },
-      ]
-    },
-    {
-      id: 'DS-20240110-0023',
-      date: '2024-01-10',
-      status: 'Shipped',
-      total: 28500,
-      items: [
-        { name: 'Leather Belt', quantity: 1, price: 28500, image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=100' },
-      ]
-    },
-    {
-      id: 'DS-20240105-0045',
-      date: '2024-01-05',
-      status: 'Delivered',
-      total: 74500,
-      items: [
-        { name: 'Wool Blend Blazer', quantity: 1, price: 74500, image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100' },
-      ]
-    },
-  ];
+  const { user, loading } = useAuth();
+  const [orders, setOrders] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      loadOrders();
+    }
+  }, [user]);
+
+  const loadOrders = async () => {
+    try {
+      const data = await getOrders(user!.id);
+      setOrders(data || []);
+    } catch (error) {
+      console.error('Error loading orders:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (loading || isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
