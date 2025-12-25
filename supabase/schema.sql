@@ -136,7 +136,6 @@ create table public.products (
   original_price integer,
   category_id uuid references public.categories(id) on delete set null,
   images text[] default '{}',
-  images_360 text[] default '{}',  -- 360° view images
   colors jsonb default '[]',  -- Array of {name: string, hex: string, image_url: string}
   sizes text[] default '{}',
   tags text[] default '{}',
