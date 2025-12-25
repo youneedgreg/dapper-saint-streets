@@ -346,6 +346,12 @@ const ProductFormModal = ({ open, onOpenChange, product, onSubmit }: ProductForm
             </div>
           </div>
 
+          {/* Cropped Image Upload */}
+          <div className="space-y-2">
+            <Label htmlFor="croppedImage">Cropped Image</Label>
+            <Input id="croppedImage" type="file" accept="image/*" />
+          </div>
+
           {/* Actions */}
           <div className="flex justify-end gap-3 pt-4 border-t border-border">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
