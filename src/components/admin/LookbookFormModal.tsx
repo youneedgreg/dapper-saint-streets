@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X, Upload, ImageIcon, Check } from 'lucide-react';
+import { X, Upload, ImageIcon, Check, Loader } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -14,6 +14,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { products } from '@/data/products';
 import { cn } from '@/lib/utils';
+import { uploadImage, isSupabaseUrl } from '@/lib/supabase';
+import { useToast } from '@/hooks/use-toast';
 
 interface LookbookItem {
   id: string;
@@ -48,6 +50,9 @@ const LookbookFormModal = ({
     display_order: 0,
     is_active: true,
   });
+  const [isDragging, setIsDragging] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (lookbookItem) {
@@ -105,6 +110,63 @@ const LookbookFormModal = ({
     }));
   };
 
+  // Drag-drop handlers for lookbook image
+  const handleImageDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleImageDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleImageDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+    if (files.length === 0) {
+      toast({
+        title: 'Invalid files',
+        description: 'Please drop an image file',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (files.length > 1) {
+      toast({
+        title: 'Too many files',
+        description: 'Please drop only one image at a time',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const url = await uploadImage('lookbook-images', files[0], formData.title || 'untitled');
+      setFormData(prev => ({ ...prev, image_url: url }));
+      toast({
+        title: 'Success',
+        description: 'Lookbook image uploaded successfully',
+      });
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({
+        title: 'Upload failed',
+        description: error instanceof Error ? error.message : 'Failed to upload image',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -131,10 +193,38 @@ const LookbookFormModal = ({
                   (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x600?text=Invalid+Image+URL';
                 }}
               />
+              {isSupabaseUrl(formData.image_url) && (
+                <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
+                  Supabase Storage
+                </div>
+              )}
             </div>
           )}
 
-          {/* Image URL */}
+          {/* Drag and drop area */}
+          <div
+            onDragOver={handleImageDragOver}
+            onDragLeave={handleImageDragLeave}
+            onDrop={handleImageDrop}
+            className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+              isDragging
+                ? 'border-primary bg-primary/5'
+                : 'border-border hover:border-primary/50'
+            }`}
+          >
+            <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+            <p className="text-sm font-medium mb-1">
+              {isUploading ? 'Uploading image...' : 'Drag & drop lookbook image here'}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              PNG, JPG, GIF up to 5MB. Images will be saved to Supabase storage.
+            </p>
+            {isUploading && (
+              <Loader className="w-4 h-4 mx-auto mt-2 animate-spin" />
+            )}
+          </div>
+
+          {/* Image URL Input (alternative method) */}
           <div className="space-y-2">
             <Label htmlFor="image_url">
               Image URL <span className="text-destructive">*</span>
@@ -149,7 +239,7 @@ const LookbookFormModal = ({
               required
             />
             <p className="text-xs text-muted-foreground">
-              Enter a direct URL to an image (Unsplash, Imgur, or your own hosting)
+              Or paste a URL directly (Unsplash, Imgur, or your own hosting)
             </p>
           </div>
 

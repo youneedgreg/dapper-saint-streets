@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Upload, Plus, Minus } from 'lucide-react';
+import { X, Upload, Plus, Minus, Loader } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,6 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { uploadImage, isSupabaseUrl } from '@/lib/supabase';
+import { useToast } from '@/hooks/use-toast';
 
 interface ProductFormData {
   name: string;
@@ -68,6 +70,11 @@ const ProductFormModal = ({ open, onOpenChange, product, onSubmit }: ProductForm
   const [newImageUrl, setNewImageUrl] = useState('');
   const [newTag, setNewTag] = useState('');
   const [newColor, setNewColor] = useState({ name: '', hex: '#000000', image: '' });
+  const [isDraggingImages, setIsDraggingImages] = useState(false);
+  const [isDraggingColors, setIsDraggingColors] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const [uploadingColor, setUploadingColor] = useState(false);
+  const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,6 +88,117 @@ const ProductFormModal = ({ open, onOpenChange, product, onSubmit }: ProductForm
 
   const generateSlug = (name: string) => {
     return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  };
+
+  // Drag-drop handlers for product images
+  const handleImageDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingImages(true);
+  };
+
+  const handleImageDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingImages(false);
+  };
+
+  const handleImageDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingImages(false);
+
+    const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+    if (files.length === 0) {
+      toast({
+        title: 'Invalid files',
+        description: 'Please drop image files only',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setUploadingImages(true);
+    try {
+      const uploadPromises = files.map(file =>
+        uploadImage('product-images', file, `products/${formData.name || 'uncategorized'}`)
+      );
+      const uploadedUrls = await Promise.all(uploadPromises);
+      setFormData({
+        ...formData,
+        images: [...formData.images, ...uploadedUrls]
+      });
+      toast({
+        title: 'Success',
+        description: `${files.length} image(s) uploaded successfully`,
+      });
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({
+        title: 'Upload failed',
+        description: error instanceof Error ? error.message : 'Failed to upload images',
+        variant: 'destructive',
+      });
+    } finally {
+      setUploadingImages(false);
+    }
+  };
+
+  // Drag-drop handlers for color images
+  const handleColorImageDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingColors(true);
+  };
+
+  const handleColorImageDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingColors(false);
+  };
+
+  const handleColorImageDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingColors(false);
+
+    const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+    if (files.length === 0) {
+      toast({
+        title: 'Invalid files',
+        description: 'Please drop an image file',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (files.length > 1) {
+      toast({
+        title: 'Too many files',
+        description: 'Please drop only one image at a time for color variants',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setUploadingColor(true);
+    try {
+      const url = await uploadImage('product-images', files[0], `products/${formData.name || 'uncategorized'}/colors`);
+      setNewColor({ ...newColor, image: url });
+      toast({
+        title: 'Success',
+        description: 'Color image uploaded successfully',
+      });
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({
+        title: 'Upload failed',
+        description: error instanceof Error ? error.message : 'Failed to upload color image',
+        variant: 'destructive',
+      });
+    } finally {
+      setUploadingColor(false);
+    }
   };
 
   const addImage = () => {
@@ -227,22 +345,56 @@ const ProductFormModal = ({ open, onOpenChange, product, onSubmit }: ProductForm
 
           {/* Images */}
           <div className="space-y-2">
-            <Label>Images</Label>
+            <Label>Product Images</Label>
+            
+            {/* Drag and drop area */}
+            <div
+              onDragOver={handleImageDragOver}
+              onDragLeave={handleImageDragLeave}
+              onDrop={handleImageDrop}
+              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+                isDraggingImages
+                  ? 'border-primary bg-primary/5'
+                  : 'border-border hover:border-primary/50'
+              }`}
+            >
+              <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+              <p className="text-sm font-medium mb-1">
+                {uploadingImages ? 'Uploading images...' : 'Drag & drop images here'}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                PNG, JPG, GIF up to 5MB. Images will be saved to Supabase storage.
+              </p>
+              {uploadingImages && (
+                <Loader className="w-4 h-4 mx-auto mt-2 animate-spin" />
+              )}
+            </div>
+
+            {/* URL input as alternative */}
             <div className="flex gap-2">
               <Input
                 value={newImageUrl}
                 onChange={(e) => setNewImageUrl(e.target.value)}
-                placeholder="Enter image URL"
+                placeholder="Or paste image URL here"
               />
               <Button type="button" variant="outline" onClick={addImage}>
                 <Plus className="w-4 h-4" />
               </Button>
             </div>
+
+            {/* Image preview */}
             {formData.images.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {formData.images.map((img, idx) => (
                   <div key={idx} className="relative group">
-                    <img src={img} alt="" className="w-16 h-16 object-cover rounded" />
+                    <img
+                      src={img}
+                      alt=""
+                      className="w-16 h-16 object-cover rounded border border-border"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/64?text=Error';
+                      }}
+                    />
                     <button
                       type="button"
                       onClick={() => removeImage(idx)}
@@ -250,6 +402,9 @@ const ProductFormModal = ({ open, onOpenChange, product, onSubmit }: ProductForm
                     >
                       <X className="w-3 h-3" />
                     </button>
+                    {isSupabaseUrl(img) && (
+                      <span className="absolute bottom-1 right-1 bg-green-500 w-3 h-3 rounded-full border border-white" />
+                    )}
                   </div>
                 ))}
               </div>
@@ -291,17 +446,59 @@ const ProductFormModal = ({ open, onOpenChange, product, onSubmit }: ProductForm
                 value={newColor.hex}
                 onChange={(e) => setNewColor({ ...newColor, hex: e.target.value })}
               />
-              <div className="flex gap-2">
-                <Input
-                  value={newColor.image}
-                  onChange={(e) => setNewColor({ ...newColor, image: e.target.value })}
-                  placeholder="Image URL"
-                />
-                <Button type="button" variant="outline" onClick={addColor}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={addColor}
+                disabled={uploadingColor || !newColor.name.trim() || !newColor.image.trim()}
+              >
+                {uploadingColor ? (
+                  <Loader className="w-4 h-4 animate-spin" />
+                ) : (
                   <Plus className="w-4 h-4" />
-                </Button>
+                )}
+              </Button>
+            </div>
+
+            {/* Drag and drop for color image */}
+            <div
+              onDragOver={handleColorImageDragOver}
+              onDragLeave={handleColorImageDragLeave}
+              onDrop={handleColorImageDrop}
+              className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
+                isDraggingColors
+                  ? 'border-primary bg-primary/5'
+                  : 'border-border hover:border-primary/50'
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                {newColor.image ? (
+                  <>
+                    <img
+                      src={newColor.image}
+                      alt="Color preview"
+                      className="w-8 h-8 object-cover rounded border border-border"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/32?text=Error';
+                      }}
+                    />
+                    <span className="text-sm text-muted-foreground">Color image ready</span>
+                  </>
+                ) : uploadingColor ? (
+                  <>
+                    <Loader className="w-4 h-4 animate-spin" />
+                    <span className="text-sm">Uploading color image...</span>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Drop color image or click to browse</span>
+                  </>
+                )}
               </div>
             </div>
+
+            {/* Color variants list */}
             {formData.colors.length > 0 && (
               <div className="grid gap-2">
                 {formData.colors.map((color, idx) => (
@@ -310,7 +507,14 @@ const ProductFormModal = ({ open, onOpenChange, product, onSubmit }: ProductForm
                       <span className="w-6 h-6 rounded-full border border-border shrink-0" style={{ backgroundColor: color.hex }} />
                       <div className="flex flex-col">
                         <span className="text-sm font-medium">{color.name}</span>
-                        <span className="text-xs text-muted-foreground break-all">{color.image}</span>
+                        <img
+                          src={color.image}
+                          alt={color.name}
+                          className="w-6 h-6 object-cover rounded border border-border mt-1"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/24?text=X';
+                          }}
+                        />
                       </div>
                     </div>
                     <Button type="button" variant="ghost" size="icon" onClick={() => removeColor(idx)}>
