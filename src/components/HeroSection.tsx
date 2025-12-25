@@ -2,10 +2,12 @@ import { motion } from 'framer-motion';
 import { ArrowDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useTheme } from '@/hooks/useTheme';
 
 const HeroSection = () => {
   const words = ['scene', 'style', 'fashion', 'street'];
   const [wordIndex, setWordIndex] = useState(0);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -80,9 +82,12 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.1, duration: 0.8 }}
           >
-            <Link 
+            <Link
               to="/shop"
-              className="inline-block h-12 px-12 bg-white text-black hover:bg-white/90 text-xs tracking-[0.2em] uppercase font-medium leading-[48px] transition-colors"
+              className={`inline-block h-12 px-12 rounded-full border text-xs tracking-[0.2em] uppercase font-medium leading-[48px] transition-colors shadow-lg backdrop-blur-sm
+                ${theme === 'dark'
+                  ? 'bg-white text-black border-white/30 hover:bg-white/90'
+                  : 'bg-black text-white border-black/20 hover:bg-black/90'}`}
             >
               Shop Now
             </Link>
