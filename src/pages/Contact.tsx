@@ -36,11 +36,11 @@ const Contact = () => {
               </div>
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-secondary rounded-lg"><Phone className="w-5 h-5 text-primary" /></div>
-                <div><h3 className="font-semibold mb-1">Phone</h3><p className="text-muted-foreground text-sm">+1 (555) 123-4567</p></div>
+                <div><h3 className="font-semibold mb-1">Phone</h3><p className="text-muted-foreground text-sm">+254 (712) 123-4567</p></div>
               </div>
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-secondary rounded-lg"><MapPin className="w-5 h-5 text-primary" /></div>
-                <div><h3 className="font-semibold mb-1">Location</h3><p className="text-muted-foreground text-sm">Los Angeles, CA</p></div>
+                <div><h3 className="font-semibold mb-1">Location</h3><p className="text-muted-foreground text-sm">Narobi , Kenya</p></div>
               </div>
             </motion.div>
             <motion.form onSubmit={handleSubmit} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
