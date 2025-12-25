@@ -182,14 +182,6 @@ const Header = () => {
                     <User className="w-5 h-5" strokeWidth={1.5} />
                   </Link>
                 )}
-                n>
-                <Link
-                  to="/login"
-                  className="p-2 text-foreground hover:text-muted-foreground transition-colors"
-                  aria-label="Account"
-                >
-                  <User className="w-5 h-5" strokeWidth={1.5} />
-                </Link>
                 <button
                   className="p-2 text-foreground hover:text-muted-foreground transition-colors relative"
                   onClick={() => setIsCartOpen(true)}
