@@ -21,6 +21,7 @@ export interface Product {
   tags: string[];
   isNew?: boolean;
   isBestSeller?: boolean;
+  isFeatured?: boolean;
 }
 
 // Dummy 360 images - to be replaced with admin uploads
@@ -87,7 +88,8 @@ export const products: Product[] = [
     sizes: ["S", "M", "L", "XL", "XXL"],
     tags: ["bestseller", "limited"],
     isNew: true,
-    isBestSeller: true
+    isBestSeller: true,
+    isFeatured: true
   },
   {
     id: "2",
@@ -108,7 +110,8 @@ export const products: Product[] = [
     ],
     sizes: ["XS", "S", "M", "L", "XL"],
     tags: ["essential"],
-    isBestSeller: true
+    isBestSeller: true,
+    isFeatured: true
   },
   {
     id: "3",
@@ -129,7 +132,8 @@ export const products: Product[] = [
     ],
     sizes: ["S", "M", "L", "XL"],
     tags: ["limited", "exclusive"],
-    isNew: true
+    isNew: true,
+    isFeatured: true
   },
   {
     id: "4",
@@ -149,7 +153,8 @@ export const products: Product[] = [
       { name: "Navy", hex: "#1B2838" }
     ],
     sizes: ["S", "M", "L", "XL", "XXL"],
-    tags: ["essential", "comfort"]
+    tags: ["essential", "comfort"],
+    isFeatured: true
   },
   {
     id: "5",
@@ -294,7 +299,7 @@ export const getProductsByCategory = (category: string): Product[] => {
 };
 
 export const getFeaturedProducts = (): Product[] => {
-  return products.filter(p => p.isNew || p.isBestSeller).slice(0, 4);
+  return products.filter(p => p.isFeatured).slice(0, 4);
 };
 
 export const getNewArrivals = (): Product[] => {

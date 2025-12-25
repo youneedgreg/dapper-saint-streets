@@ -29,6 +29,8 @@ interface FilterContentProps {
   setShowNew: (value: boolean) => void;
   showBestSellers: boolean;
   setShowBestSellers: (value: boolean) => void;
+  showFeatured: boolean;
+  setShowFeatured: (value: boolean) => void;
   priceRange: [number, number];
   setPriceRange: (value: [number, number]) => void;
   activeFiltersCount: number;
@@ -42,6 +44,8 @@ const FilterContent = ({
   setShowNew,
   showBestSellers,
   setShowBestSellers,
+  showFeatured,
+  setShowFeatured,
   priceRange,
   setPriceRange,
   activeFiltersCount,
@@ -74,6 +78,14 @@ const FilterContent = ({
             onCheckedChange={(checked) => setShowBestSellers(checked as boolean)}
           />
           <Label htmlFor="bestseller" className="text-sm cursor-pointer">Best Sellers</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id="featured" 
+            checked={showFeatured}
+            onCheckedChange={(checked) => setShowFeatured(checked as boolean)}
+          />
+          <Label htmlFor="featured" className="text-sm cursor-pointer">Featured</Label>
         </div>
       </div>
     </div>
@@ -125,17 +137,20 @@ const FilterContent = ({
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryFromUrl = searchParams.get('category') || 'All';
+  const featuredFromUrl = searchParams.get('featured') === 'true';
   const [selectedCategory, setSelectedCategory] = useState(categoryFromUrl);
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [showOnSale, setShowOnSale] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showBestSellers, setShowBestSellers] = useState(false);
+  const [showFeatured, setShowFeatured] = useState(featuredFromUrl);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   
   useEffect(() => {
     setSelectedCategory(categoryFromUrl);
-  }, [categoryFromUrl]);
+    setShowFeatured(featuredFromUrl);
+  }, [categoryFromUrl, featuredFromUrl]);
   
   const handleCategoryChange = (cat: string) => {
     setSelectedCategory(cat);
@@ -150,11 +165,12 @@ const Shop = () => {
     setShowOnSale(false);
     setShowNew(false);
     setShowBestSellers(false);
+    setShowFeatured(false);
     setPriceRange([0, 1000]);
     setSortBy('newest');
   };
 
-  const activeFiltersCount = [showOnSale, showNew, showBestSellers].filter(Boolean).length;
+  const activeFiltersCount = [showOnSale, showNew, showBestSellers, showFeatured].filter(Boolean).length;
   
   // Apply filters
   let filtered = selectedCategory === 'All' 
@@ -174,6 +190,11 @@ const Shop = () => {
   // Filter by bestsellers
   if (showBestSellers) {
     filtered = filtered.filter(p => p.isBestSeller);
+  }
+
+  // Filter by featured
+  if (showFeatured) {
+    filtered = filtered.filter(p => p.isFeatured);
   }
 
   // Filter by price range
@@ -253,6 +274,8 @@ const Shop = () => {
                       setShowNew={setShowNew}
                       showBestSellers={showBestSellers}
                       setShowBestSellers={setShowBestSellers}
+                      showFeatured={showFeatured}
+                      setShowFeatured={setShowFeatured}
                       priceRange={priceRange}
                       setPriceRange={setPriceRange}
                       activeFiltersCount={activeFiltersCount}
@@ -306,6 +329,14 @@ const Shop = () => {
                 <span className="inline-flex items-center gap-1 px-3 py-1 text-sm bg-secondary rounded-full">
                   Best Sellers
                   <button onClick={() => setShowBestSellers(false)}>
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              )}
+              {showFeatured && (
+                <span className="inline-flex items-center gap-1 px-3 py-1 text-sm bg-secondary rounded-full">
+                  Featured
+                  <button onClick={() => setShowFeatured(false)}>
                     <X className="h-3 w-3" />
                   </button>
                 </span>

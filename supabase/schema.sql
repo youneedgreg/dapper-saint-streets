@@ -143,6 +143,7 @@ create table public.products (
   stock integer default 0,
   is_new boolean default false,
   is_bestseller boolean default false,
+  is_featured boolean default false,
   is_active boolean default true,
   created_at timestamp with time zone default now(),
   updated_at timestamp with time zone default now()

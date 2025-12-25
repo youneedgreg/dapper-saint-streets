@@ -38,7 +38,7 @@ const FeaturedProducts = () => {
             transition={{ delay: 0.2 }}
           >
             <Link 
-              to="/shop" 
+              to="/shop?featured=true" 
               className="inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase text-muted-foreground hover:text-foreground transition-colors group"
             >
               View All
