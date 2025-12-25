@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 const HeroSection = () => {
-  const words = ['luxury', 'style', 'fashion', 'street'];
+  const words = ['scene', 'style', 'fashion', 'street'];
   const [wordIndex, setWordIndex] = useState(0);
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const HeroSection = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.9, duration: 0.8 }}
           >
-            Where luxury craftsmanship meets{' '}
+            Don't blend in, Rule the{' '}
             <motion.span
               key={wordIndex}
               initial={{ opacity: 0, y: 10 }}
@@ -72,7 +72,6 @@ const HeroSection = () => {
             >
               {words[wordIndex]}
             </motion.span>{' '}
-            culture
           </motion.p>
 
           {/* CTA button */}

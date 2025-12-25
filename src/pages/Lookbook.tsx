@@ -66,7 +66,7 @@ const Lookbook = () => {
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Explore our latest collection through the lens of urban luxury. 
-            Where streetwear meets high fashion.
+            Don't blend in, Rule the Scene.
           </p>
         </motion.section>
 

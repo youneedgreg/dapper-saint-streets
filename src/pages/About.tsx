@@ -13,7 +13,7 @@ const About = () => (
         <div className="container mx-auto px-4">
           <motion.div className="max-w-3xl mx-auto text-center" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>
             <span className="text-xs tracking-[0.3em] uppercase text-primary mb-4 block">Our Story</span>
-            <h1 className="font-display text-5xl md:text-6xl font-bold mb-6">Where Luxury Meets the <span className="text-gradient-gold">Streets</span></h1>
+            <h1 className="font-display text-5xl md:text-6xl font-bold mb-6">Don't blend in, Rule the <span className="text-gradient-gold">Scene</span></h1>
             <p className="text-lg text-muted-foreground">Born from a passion for premium craftsmanship and urban culture, Dapper Saint redefines what streetwear can be.</p>
           </motion.div>
         </div>

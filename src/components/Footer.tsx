@@ -13,7 +13,7 @@ const Footer = () => {
               <img src={logo} alt="Dapper Saint" className="h-10 w-auto" />
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-              Where luxury craftsmanship meets street culture. Premium streetwear for those who refuse to blend in.
+              Don't blend in, Rule the scene. Premium streetwear for those who refuse to blend in.
             </p>
           </div>
 
