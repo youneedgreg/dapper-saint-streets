@@ -22,6 +22,106 @@ import { Button } from "@/components/ui/button";
 
 type SortOption = 'newest' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
 
+interface FilterContentProps {
+  showOnSale: boolean;
+  setShowOnSale: (value: boolean) => void;
+  showNew: boolean;
+  setShowNew: (value: boolean) => void;
+  showBestSellers: boolean;
+  setShowBestSellers: (value: boolean) => void;
+  priceRange: [number, number];
+  setPriceRange: (value: [number, number]) => void;
+  activeFiltersCount: number;
+  clearFilters: () => void;
+}
+
+const FilterContent = ({
+  showOnSale,
+  setShowOnSale,
+  showNew,
+  setShowNew,
+  showBestSellers,
+  setShowBestSellers,
+  priceRange,
+  setPriceRange,
+  activeFiltersCount,
+  clearFilters
+}: FilterContentProps) => (
+  <div className="space-y-6">
+    <div>
+      <h3 className="font-semibold mb-3">Filters</h3>
+      <div className="space-y-3">
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id="sale" 
+            checked={showOnSale}
+            onCheckedChange={(checked) => setShowOnSale(checked as boolean)}
+          />
+          <Label htmlFor="sale" className="text-sm cursor-pointer">On Sale</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id="new" 
+            checked={showNew}
+            onCheckedChange={(checked) => setShowNew(checked as boolean)}
+          />
+          <Label htmlFor="new" className="text-sm cursor-pointer">New Arrivals</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id="bestseller" 
+            checked={showBestSellers}
+            onCheckedChange={(checked) => setShowBestSellers(checked as boolean)}
+          />
+          <Label htmlFor="bestseller" className="text-sm cursor-pointer">Best Sellers</Label>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3 className="font-semibold mb-3">Price Range</h3>
+      <div className="space-y-2">
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <Label htmlFor="minPrice" className="text-xs">Min</Label>
+            <Input
+              id="minPrice"
+              type="number"
+              value={priceRange[0]}
+              onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
+              className="h-9 text-sm"
+              min="0"
+              max={priceRange[1]}
+            />
+          </div>
+          <div className="flex-1">
+            <Label htmlFor="maxPrice" className="text-xs">Max</Label>
+            <Input
+              id="maxPrice"
+              type="number"
+              value={priceRange[1]}
+              onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+              className="h-9 text-sm"
+              min={priceRange[0]}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {activeFiltersCount > 0 && (
+      <Button 
+        variant="outline" 
+        size="sm" 
+        onClick={clearFilters}
+        className="w-full"
+      >
+        Clear All Filters
+      </Button>
+    )}
+  </div>
+);
+
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryFromUrl = searchParams.get('category') || 'All';
@@ -98,82 +198,6 @@ const Shop = () => {
       break;
   }
 
-  const FilterContent = () => (
-    <div className="space-y-6">
-      <div>
-        <h3 className="font-semibold mb-3">Filters</h3>
-        <div className="space-y-3">
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="sale" 
-              checked={showOnSale}
-              onCheckedChange={(checked) => setShowOnSale(checked as boolean)}
-            />
-            <Label htmlFor="sale" className="text-sm cursor-pointer">On Sale</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="new" 
-              checked={showNew}
-              onCheckedChange={(checked) => setShowNew(checked as boolean)}
-            />
-            <Label htmlFor="new" className="text-sm cursor-pointer">New Arrivals</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="bestseller" 
-              checked={showBestSellers}
-              onCheckedChange={(checked) => setShowBestSellers(checked as boolean)}
-            />
-            <Label htmlFor="bestseller" className="text-sm cursor-pointer">Best Sellers</Label>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <h3 className="font-semibold mb-3">Price Range</h3>
-        <div className="space-y-2">
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <Label htmlFor="minPrice" className="text-xs">Min</Label>
-              <Input
-                id="minPrice"
-                type="number"
-                value={priceRange[0]}
-                onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
-                className="h-9 text-sm"
-                min="0"
-                max={priceRange[1]}
-              />
-            </div>
-            <div className="flex-1">
-              <Label htmlFor="maxPrice" className="text-xs">Max</Label>
-              <Input
-                id="maxPrice"
-                type="number"
-                value={priceRange[1]}
-                onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
-                className="h-9 text-sm"
-                min={priceRange[0]}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {activeFiltersCount > 0 && (
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={clearFilters}
-          className="w-full"
-        >
-          Clear All Filters
-        </Button>
-      )}
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -222,14 +246,36 @@ const Shop = () => {
                     <SheetTitle>Filters</SheetTitle>
                   </SheetHeader>
                   <div className="mt-6">
-                    <FilterContent />
+                    <FilterContent
+                      showOnSale={showOnSale}
+                      setShowOnSale={setShowOnSale}
+                      showNew={showNew}
+                      setShowNew={setShowNew}
+                      showBestSellers={showBestSellers}
+                      setShowBestSellers={setShowBestSellers}
+                      priceRange={priceRange}
+                      setPriceRange={setPriceRange}
+                      activeFiltersCount={activeFiltersCount}
+                      clearFilters={clearFilters}
+                    />
                   </div>
                 </SheetContent>
               </Sheet>
 
               {/* Desktop Filters */}
               <div className="hidden md:block">
-                <FilterContent />
+                <FilterContent
+                  showOnSale={showOnSale}
+                  setShowOnSale={setShowOnSale}
+                  showNew={showNew}
+                  setShowNew={setShowNew}
+                  showBestSellers={showBestSellers}
+                  setShowBestSellers={setShowBestSellers}
+                  priceRange={priceRange}
+                  setPriceRange={setPriceRange}
+                  activeFiltersCount={activeFiltersCount}
+                  clearFilters={clearFilters}
+                />
               </div>
             </div>
 
