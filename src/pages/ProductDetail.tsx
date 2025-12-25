@@ -23,27 +23,21 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [currentImage, setCurrentImage] = useState(0);
   const [show3DViewer, setShow3DViewer] = useState(false);
-  const [showCropped, setShowCropped] = useState(false);
 
   const selectedColorVariant = product
     ? product.colors.find((c) => c.name === selectedColor)
     : undefined;
   const galleryImages = product
-    ? (
-        showCropped && product.croppedImage
-          ? [product.croppedImage, ...product.images]
-          : selectedColorVariant
-          ? [
-              selectedColorVariant.image,
-              ...product.images.filter((img) => img !== selectedColorVariant.image)
-            ]
-          : product.images
-      )
+    ? selectedColorVariant
+      ? [
+          selectedColorVariant.image,
+          ...product.images.filter((img) => img !== selectedColorVariant.image)
+        ]
+      : product.images
     : [];
 
   useEffect(() => {
     setCurrentImage(0);
-    setShowCropped(false);
   }, [selectedColor, product?.id]);
 
   if (!product) return <div className="min-h-screen bg-background flex items-center justify-center">Product not found</div>;
@@ -100,25 +94,6 @@ const ProductDetail = () => {
                   ))}
                 </div>
               </div>
-              {product.isCropped && product.croppedImage && (
-                <div>
-                  <p className="text-sm font-semibold mb-3">Style</p>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setShowCropped(false)}
-                      className={cn("px-4 py-2 border rounded-lg text-sm transition-colors", !showCropped ? "border-primary bg-primary text-primary-foreground" : "border-border hover:border-primary")}
-                    >
-                      Standard
-                    </button>
-                    <button
-                      onClick={() => setShowCropped(true)}
-                      className={cn("px-4 py-2 border rounded-lg text-sm transition-colors", showCropped ? "border-primary bg-primary text-primary-foreground" : "border-border hover:border-primary")}
-                    >
-                      Cropped
-                    </button>
-                  </div>
-                </div>
-              )}
               <div>
                 <p className="text-sm font-semibold mb-3">Size</p>
                 <div className="flex flex-wrap gap-2">

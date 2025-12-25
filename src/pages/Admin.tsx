@@ -61,9 +61,9 @@ const mockCustomers = [
 ];
 
 const mockLookbookItems = [
-  { id: '1', image_url: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1200&auto=format&fit=crop', title: 'Urban Edge', collection: 'Essentials', description: 'Street style essentials', display_order: 1, is_active: true },
-  { id: '2', image_url: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1200&auto=format&fit=crop', title: 'Street Royalty', collection: 'Premium', description: 'Premium street wear', display_order: 2, is_active: true },
-  { id: '3', image_url: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=1200&auto=format&fit=crop', title: 'Dark Dynasty', collection: 'Signature', description: 'Signature dark collection', display_order: 3, is_active: true },
+  { id: '1', image_url: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1200&auto=format&fit=crop', title: 'Urban Edge', collection: 'Essentials', description: 'Street style essentials', product_ids: ['1', '4'], display_order: 1, is_active: true },
+  { id: '2', image_url: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1200&auto=format&fit=crop', title: 'Street Royalty', collection: 'Premium', description: 'Premium street wear', product_ids: ['2', '5'], display_order: 2, is_active: true },
+  { id: '3', image_url: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=1200&auto=format&fit=crop', title: 'Dark Dynasty', collection: 'Signature', description: 'Signature dark collection', product_ids: ['3', '6'], display_order: 3, is_active: true },
 ];
 
 const Admin = () => {

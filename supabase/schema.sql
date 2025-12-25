@@ -146,9 +146,7 @@ create table public.products (
   is_featured boolean default false,
   is_active boolean default true,
   created_at timestamp with time zone default now(),
-  updated_at timestamp with time zone default now(),
-  cropped_image_url VARCHAR,
-  is_cropped BOOLEAN DEFAULT FALSE
+  updated_at timestamp with time zone default now()
 );
 
 alter table public.products
@@ -214,6 +212,7 @@ create table public.lookbook_items (
   title text not null,
   collection text,
   description text,
+  product_ids uuid[] default '{}',
   display_order integer default 0,
   is_active boolean default true,
   created_at timestamp with time zone default now(),

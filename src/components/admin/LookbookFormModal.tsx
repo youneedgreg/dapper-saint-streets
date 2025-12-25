@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X, Upload, ImageIcon } from 'lucide-react';
+import { X, Upload, ImageIcon, Check } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { products } from '@/data/products';
+import { cn } from '@/lib/utils';
 
 interface LookbookItem {
   id: string;
@@ -19,6 +21,7 @@ interface LookbookItem {
   title: string;
   collection: string;
   description?: string;
+  product_ids?: string[];
   display_order: number;
   is_active: boolean;
 }
@@ -41,6 +44,7 @@ const LookbookFormModal = ({
     title: '',
     collection: '',
     description: '',
+    product_ids: [] as string[],
     display_order: 0,
     is_active: true,
   });
@@ -52,6 +56,7 @@ const LookbookFormModal = ({
         title: lookbookItem.title || '',
         collection: lookbookItem.collection || '',
         description: lookbookItem.description || '',
+        product_ids: lookbookItem.product_ids || [],
         display_order: lookbookItem.display_order || 0,
         is_active: lookbookItem.is_active ?? true,
       });
@@ -61,6 +66,7 @@ const LookbookFormModal = ({
         title: '',
         collection: '',
         description: '',
+        product_ids: [],
         display_order: 0,
         is_active: true,
       });
@@ -87,6 +93,15 @@ const LookbookFormModal = ({
     setFormData(prev => ({
       ...prev,
       is_active: e.target.checked,
+    }));
+  };
+
+  const handleProductToggle = (productId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      product_ids: prev.product_ids.includes(productId)
+        ? prev.product_ids.filter(id => id !== productId)
+        : [...prev.product_ids, productId],
     }));
   };
 
@@ -211,6 +226,53 @@ const LookbookFormModal = ({
             <Label htmlFor="is_active" className="cursor-pointer">
               Active (visible on the site)
             </Label>
+          </div>
+
+          {/* Product Links */}
+          <div className="space-y-3">
+            <Label>Linked Products (Optional)</Label>
+            <p className="text-xs text-muted-foreground">
+              Select products to show in the styled looks when this lookbook item is clicked
+            </p>
+            <div className="border border-border rounded-lg p-4 max-h-64 overflow-y-auto space-y-2">
+              {products.length > 0 ? (
+                products.map(product => (
+                  <button
+                    key={product.id}
+                    type="button"
+                    onClick={() => handleProductToggle(product.id)}
+                    className={cn(
+                      "w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all text-left",
+                      formData.product_ids.includes(product.id)
+                        ? "border-primary bg-primary/5"
+                        : "border-border bg-muted/30 hover:bg-muted/50"
+                    )}
+                  >
+                    <div className={cn(
+                      "w-5 h-5 rounded border-2 flex items-center justify-center transition-all",
+                      formData.product_ids.includes(product.id)
+                        ? "border-primary bg-primary"
+                        : "border-border"
+                    )}>
+                      {formData.product_ids.includes(product.id) && (
+                        <Check className="w-3 h-3 text-primary-foreground" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm truncate">{product.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{product.category}</p>
+                    </div>
+                  </button>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground py-2">No products available</p>
+              )}
+            </div>
+            {formData.product_ids.length > 0 && (
+              <p className="text-xs text-primary font-medium">
+                {formData.product_ids.length} product{formData.product_ids.length !== 1 ? 's' : ''} selected
+              </p>
+            )}
           </div>
 
           {/* Action buttons */}
