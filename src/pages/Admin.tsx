@@ -18,6 +18,7 @@ import {
   Image
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { products } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,6 +34,7 @@ import {
 } from '@/components/ui/table';
 import ProductFormModal from '@/components/admin/ProductFormModal';
 import LookbookFormModal from '@/components/admin/LookbookFormModal';
+import { AnalyticsChat } from '@/components/admin/AnalyticsChat';
 import { useToast } from '@/hooks/use-toast';
 
 const sidebarLinks = [
@@ -65,6 +67,25 @@ const mockLookbookItems = [
   { id: '2', image_url: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1200&auto=format&fit=crop', title: 'Street Royalty', collection: 'Premium', description: 'Premium street wear', product_ids: ['2', '5'], display_order: 2, is_active: true },
   { id: '3', image_url: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=1200&auto=format&fit=crop', title: 'Dark Dynasty', collection: 'Signature', description: 'Signature dark collection', product_ids: ['3', '6'], display_order: 3, is_active: true },
 ];
+
+const salesData = [
+  { name: 'Jan', sales: 4000, revenue: 24000 },
+  { name: 'Feb', sales: 3000, revenue: 21000 },
+  { name: 'Mar', sales: 2000, revenue: 14000 },
+  { name: 'Apr', sales: 2780, revenue: 19460 },
+  { name: 'May', sales: 1890, revenue: 13230 },
+  { name: 'Jun', sales: 2390, revenue: 16730 },
+  { name: 'Jul', sales: 3490, revenue: 24430 },
+];
+
+const productSalesData = [
+  { name: 'Urban Edge', value: 35, color: '#3b82f6' },
+  { name: 'Street Royalty', value: 28, color: '#8b5cf6' },
+  { name: 'Dark Dynasty', value: 22, color: '#ec4899' },
+  { name: 'Others', value: 15, color: '#6b7280' },
+];
+
+const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#6b7280'];
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -563,33 +584,123 @@ const Admin = () => {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-6"
             >
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-card rounded-lg border border-border p-6">
-                  <h3 className="font-display text-lg font-bold mb-4">Sales Overview</h3>
-                  <div className="h-64 flex items-center justify-center text-muted-foreground">
-                    <div className="text-center">
-                      <TrendingUp className="w-12 h-12 mx-auto mb-4 text-primary" />
-                      <p>Sales chart visualization</p>
-                      <p className="text-sm">(Visual prototype)</p>
+              {/* Key Metrics */}
+              <div className="grid md:grid-cols-4 gap-4">
+                <div className="bg-card rounded-lg border border-border p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Total Revenue</p>
+                      <p className="font-display text-2xl font-bold mt-1">₭487.5K</p>
+                      <p className="text-xs text-green-500 mt-2">↑ 23% from last month</p>
                     </div>
+                    <DollarSign className="w-10 h-10 text-primary opacity-20" />
                   </div>
                 </div>
+                <div className="bg-card rounded-lg border border-border p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Total Sales</p>
+                      <p className="font-display text-2xl font-bold mt-1">47</p>
+                      <p className="text-xs text-green-500 mt-2">↑ 12% from last month</p>
+                    </div>
+                    <ShoppingCart className="w-10 h-10 text-primary opacity-20" />
+                  </div>
+                </div>
+                <div className="bg-card rounded-lg border border-border p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Active Customers</p>
+                      <p className="font-display text-2xl font-bold mt-1">4</p>
+                      <p className="text-xs text-green-500 mt-2">↑ 1 new customer</p>
+                    </div>
+                    <Users className="w-10 h-10 text-primary opacity-20" />
+                  </div>
+                </div>
+                <div className="bg-card rounded-lg border border-border p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Avg Order Value</p>
+                      <p className="font-display text-2xl font-bold mt-1">₭10.4K</p>
+                      <p className="text-xs text-green-500 mt-2">↑ 15% from last month</p>
+                    </div>
+                    <TrendingUp className="w-10 h-10 text-primary opacity-20" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Charts */}
+              <div className="grid md:grid-cols-3 gap-6">
+                {/* Sales & Revenue Chart */}
+                <div className="md:col-span-2 bg-card rounded-lg border border-border p-6">
+                  <h3 className="font-display text-lg font-bold mb-4">Sales & Revenue Trend</h3>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={salesData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <XAxis dataKey="name" stroke="#9ca3af" />
+                      <YAxis stroke="#9ca3af" />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: '#1f2937', 
+                          border: '1px solid #374151',
+                          borderRadius: '8px'
+                        }}
+                      />
+                      <Legend />
+                      <Line type="monotone" dataKey="sales" stroke="#3b82f6" strokeWidth={2} name="Sales Count" />
+                      <Line type="monotone" dataKey="revenue" stroke="#8b5cf6" strokeWidth={2} name="Revenue (₭)" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* Product Sales Distribution */}
+                <div className="bg-card rounded-lg border border-border p-6">
+                  <h3 className="font-display text-lg font-bold mb-4">Product Sales Mix</h3>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={productSalesData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={(entry) => `${entry.name}: ${entry.value}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {productSalesData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Analytics Chat & Top Products */}
+              <div className="grid md:grid-cols-3 gap-6">
+                {/* Chat */}
+                <div className="md:col-span-2 h-96">
+                  <AnalyticsChat />
+                </div>
+
+                {/* Top Products */}
                 <div className="bg-card rounded-lg border border-border p-6">
                   <h3 className="font-display text-lg font-bold mb-4">Top Products</h3>
                   <div className="space-y-4">
                     {products.slice(0, 5).map((product, idx) => (
-                      <div key={product.id} className="flex items-center gap-4">
-                        <span className="text-sm text-muted-foreground w-4">{idx + 1}</span>
+                      <div key={product.id} className="flex items-center gap-3">
+                        <span className="text-sm font-bold text-primary w-6">{idx + 1}</span>
                         <img
                           src={product.images[0]}
                           alt={product.name}
                           className="w-10 h-10 object-cover rounded"
                         />
-                        <div className="flex-1">
-                          <p className="font-medium text-sm">{product.name}</p>
-                          <p className="text-xs text-muted-foreground">${product.price}</p>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">{product.name}</p>
+                          <p className="text-xs text-muted-foreground">{formatPrice(product.price)}</p>
                         </div>
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-sm text-muted-foreground whitespace-nowrap">
                           {Math.floor(Math.random() * 50 + 10)} sold
                         </span>
                       </div>
@@ -620,7 +731,7 @@ const Admin = () => {
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Currency</label>
-                    <Input defaultValue="USD ($)" />
+                    <Input defaultValue="Kenya Shillings (KES)" />
                   </div>
                   <Button>Save Changes</Button>
                 </div>
