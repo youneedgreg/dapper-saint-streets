@@ -137,7 +137,7 @@ create table public.products (
   category_id uuid references public.categories(id) on delete set null,
   images text[] default '{}',
   images_360 text[] default '{}',  -- 360° view images
-  colors text[] default '{}',
+  colors jsonb default '[]',  -- Array of {name: string, hex: string}
   sizes text[] default '{}',
   tags text[] default '{}',
   stock integer default 0,
@@ -218,7 +218,10 @@ create table public.orders (
   status order_status default 'pending',
   subtotal integer not null,
   shipping_cost integer default 0,
+  tax integer default 0,
   total integer not null,
+  payment_method text,  -- 'card', 'mpesa', etc.
+  payment_status text default 'pending',  -- 'pending', 'completed', 'failed'
   shipping_address jsonb,
   billing_address jsonb,
   notes text,
@@ -360,11 +363,124 @@ create policy "Users can delete own reviews"
 create index idx_products_category on public.products(category_id);
 create index idx_products_is_active on public.products(is_active);
 create index idx_products_is_new on public.products(is_new);
+create index idx_products_is_bestseller on public.products(is_bestseller);
 create index idx_orders_user on public.orders(user_id);
 create index idx_orders_status on public.orders(status);
 create index idx_order_items_order on public.order_items(order_id);
 create index idx_wishlist_user on public.wishlist(user_id);
 create index idx_reviews_product on public.reviews(product_id);
+
+-- =============================================
+-- CART (Persistent shopping cart)
+-- =============================================
+
+create table public.cart (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade not null,
+  product_id uuid references public.products(id) on delete cascade not null,
+  quantity integer not null default 1 check (quantity > 0),
+  selected_color text not null,
+  selected_size text not null,
+  created_at timestamp with time zone default now(),
+  updated_at timestamp with time zone default now(),
+  unique (user_id, product_id, selected_color, selected_size)
+);
+
+alter table public.cart enable row level security;
+
+create policy "Users can manage own cart"
+  on public.cart for all
+  using (auth.uid() = user_id);
+
+create index idx_cart_user on public.cart(user_id);
+
+-- =============================================
+-- NEWSLETTER SUBSCRIPTIONS
+-- =============================================
+
+create table public.newsletter_subscriptions (
+  id uuid primary key default gen_random_uuid(),
+  email text not null unique,
+  is_active boolean default true,
+  subscribed_at timestamp with time zone default now(),
+  unsubscribed_at timestamp with time zone
+);
+
+alter table public.newsletter_subscriptions enable row level security;
+
+create policy "Anyone can subscribe to newsletter"
+  on public.newsletter_subscriptions for insert
+  to anon, authenticated
+  with check (true);
+
+create policy "Admins can manage newsletter subscriptions"
+  on public.newsletter_subscriptions for all
+  using (public.has_role(auth.uid(), 'admin'));
+
+create index idx_newsletter_email on public.newsletter_subscriptions(email);
+create index idx_newsletter_active on public.newsletter_subscriptions(is_active);
+
+-- =============================================
+-- CONTACT MESSAGES
+-- =============================================
+
+create table public.contact_messages (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  email text not null,
+  message text not null,
+  is_read boolean default false,
+  is_archived boolean default false,
+  user_id uuid references auth.users(id) on delete set null,
+  created_at timestamp with time zone default now()
+);
+
+alter table public.contact_messages enable row level security;
+
+create policy "Anyone can send contact messages"
+  on public.contact_messages for insert
+  to anon, authenticated
+  with check (true);
+
+create policy "Admins can manage contact messages"
+  on public.contact_messages for all
+  using (public.has_role(auth.uid(), 'admin'));
+
+create index idx_contact_messages_is_read on public.contact_messages(is_read);
+create index idx_contact_messages_created_at on public.contact_messages(created_at);
+
+-- =============================================
+-- NOTIFICATIONS
+-- =============================================
+
+create table public.notifications (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade not null,
+  title text not null,
+  message text not null,
+  type text default 'info',  -- info, success, warning, error
+  is_read boolean default false,
+  link text,
+  created_at timestamp with time zone default now()
+);
+
+alter table public.notifications enable row level security;
+
+create policy "Users can view own notifications"
+  on public.notifications for select
+  using (auth.uid() = user_id);
+
+create policy "Users can update own notifications"
+  on public.notifications for update
+  using (auth.uid() = user_id);
+
+create policy "Admins can create notifications"
+  on public.notifications for insert
+  using (public.has_role(auth.uid(), 'admin'));
+
+create index idx_notifications_user on public.notifications(user_id);
+create index idx_notifications_is_read on public.notifications(is_read);
+create index idx_notifications_created_at on public.notifications(created_at);
 
 -- =============================================
 -- UPDATED_AT TRIGGER
@@ -392,13 +508,169 @@ create trigger update_orders_updated_at
   before update on public.orders
   for each row execute procedure public.update_updated_at();
 
+create trigger update_cart_updated_at
+  before update on public.cart
+  for each row execute procedure public.update_updated_at();
+
 -- =============================================
 -- SEED CATEGORIES
 -- =============================================
 
 insert into public.categories (name, slug, description) values
-  ('Shirts', 'shirts', 'Premium quality shirts'),
-  ('Jackets', 'jackets', 'Stylish outerwear'),
-  ('Pants', 'pants', 'Comfortable trousers'),
-  ('Accessories', 'accessories', 'Complete your look'),
-  ('Footwear', 'footwear', 'Quality shoes and boots');
+  ('Hoodies', 'hoodies', 'Premium hoodies and sweatshirts'),
+  ('T-Shirts', 't-shirts', 'High-quality t-shirts'),
+  ('Jackets', 'jackets', 'Stylish outerwear and jackets'),
+  ('Pants', 'pants', 'Comfortable trousers and joggers'),
+  ('Sweaters', 'sweaters', 'Cozy sweaters and knitwear'),
+  ('Accessories', 'accessories', 'Complete your look with accessories')
+on conflict (slug) do nothing;
+
+-- =============================================
+-- COUPON CODES
+-- =============================================
+
+create table public.coupons (
+  id uuid primary key default gen_random_uuid(),
+  code text not null unique,
+  discount_type text not null check (discount_type in ('percentage', 'fixed')),
+  discount_value integer not null check (discount_value > 0),
+  min_purchase_amount integer default 0,
+  max_uses integer,
+  current_uses integer default 0,
+  is_active boolean default true,
+  valid_from timestamp with time zone default now(),
+  valid_until timestamp with time zone,
+  created_at timestamp with time zone default now()
+);
+
+alter table public.coupons enable row level security;
+
+create policy "Anyone can view active coupons"
+  on public.coupons for select
+  to anon, authenticated
+  using (is_active = true and (valid_until is null or valid_until > now()));
+
+create policy "Admins can manage coupons"
+  on public.coupons for all
+  using (public.has_role(auth.uid(), 'admin'));
+
+create index idx_coupons_code on public.coupons(code);
+create index idx_coupons_is_active on public.coupons(is_active);
+
+-- =============================================
+-- COUPON USAGE TRACKING
+-- =============================================
+
+create table public.coupon_usage (
+  id uuid primary key default gen_random_uuid(),
+  coupon_id uuid references public.coupons(id) on delete cascade not null,
+  user_id uuid references auth.users(id) on delete cascade,
+  order_id uuid references public.orders(id) on delete cascade,
+  discount_amount integer not null,
+  used_at timestamp with time zone default now()
+);
+
+alter table public.coupon_usage enable row level security;
+
+create policy "Users can view own coupon usage"
+  on public.coupon_usage for select
+  using (auth.uid() = user_id);
+
+create policy "Admins can manage coupon usage"
+  on public.coupon_usage for all
+  using (public.has_role(auth.uid(), 'admin'));
+
+create index idx_coupon_usage_coupon on public.coupon_usage(coupon_id);
+create index idx_coupon_usage_user on public.coupon_usage(user_id);
+
+-- =============================================
+-- PAYMENT TRANSACTIONS
+-- =============================================
+
+create table public.payment_transactions (
+  id uuid primary key default gen_random_uuid(),
+  order_id uuid references public.orders(id) on delete cascade not null,
+  payment_method text not null,
+  amount integer not null,
+  status text default 'pending' check (status in ('pending', 'processing', 'completed', 'failed', 'refunded')),
+  transaction_id text,  -- External payment provider transaction ID
+  provider_response jsonb,
+  created_at timestamp with time zone default now(),
+  updated_at timestamp with time zone default now()
+);
+
+alter table public.payment_transactions enable row level security;
+
+create policy "Users can view own payment transactions"
+  on public.payment_transactions for select
+  using (
+    exists (
+      select 1 from public.orders
+      where orders.id = payment_transactions.order_id
+      and orders.user_id = auth.uid()
+    )
+  );
+
+create policy "Admins can manage payment transactions"
+  on public.payment_transactions for all
+  using (public.has_role(auth.uid(), 'admin'));
+
+create index idx_payment_transactions_order on public.payment_transactions(order_id);
+create index idx_payment_transactions_status on public.payment_transactions(status);
+
+-- =============================================
+-- PRODUCT VIEWS (Analytics)
+-- =============================================
+
+create table public.product_views (
+  id uuid primary key default gen_random_uuid(),
+  product_id uuid references public.products(id) on delete cascade not null,
+  user_id uuid references auth.users(id) on delete set null,
+  session_id text,
+  viewed_at timestamp with time zone default now()
+);
+
+alter table public.product_views enable row level security;
+
+create policy "Anyone can record product views"
+  on public.product_views for insert
+  to anon, authenticated
+  with check (true);
+
+create policy "Admins can view analytics"
+  on public.product_views for select
+  using (public.has_role(auth.uid(), 'admin'));
+
+create index idx_product_views_product on public.product_views(product_id);
+create index idx_product_views_viewed_at on public.product_views(viewed_at);
+
+-- =============================================
+-- USEFUL VIEWS
+-- =============================================
+
+-- View for product details with category info
+create or replace view public.products_with_category as
+select 
+  p.*,
+  c.name as category_name,
+  c.slug as category_slug
+from public.products p
+left join public.categories c on p.category_id = c.id;
+
+-- View for order summaries
+create or replace view public.order_summaries as
+select 
+  o.*,
+  count(oi.id) as item_count,
+  array_agg(
+    jsonb_build_object(
+      'product_name', oi.product_name,
+      'quantity', oi.quantity,
+      'price', oi.price,
+      'color', oi.color,
+      'size', oi.size
+    )
+  ) as items
+from public.orders o
+left join public.order_items oi on o.id = oi.order_id
+group by o.id;
