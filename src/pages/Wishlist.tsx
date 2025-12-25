@@ -10,7 +10,7 @@ import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/lib/currency';
-import { getWishlistItems, removeFromWishlist as removeFromWishlistDB } from '@/lib/database';
+import { getWishlist, removeFromWishlist as removeFromWishlistDB } from '@/lib/database';
 
 const Wishlist = () => {
   const { user, loading: authLoading } = useAuth();
@@ -33,8 +33,8 @@ const Wishlist = () => {
     if (!user) return;
     
     try {
-      const data = await getWishlistItems(user.id);
-      setWishlistItems(data.map(item => item.product));
+      const data = await getWishlist(user.id);
+      setWishlistItems((data || []).map((item: any) => item.products));
     } catch (error) {
       console.error('Error loading wishlist:', error);
     } finally {
@@ -45,7 +45,7 @@ const Wishlist = () => {
   const handleRemoveItem = async (itemId: string) => {
     if (user) {
       try {
-        await removeFromWishlistDB(itemId);
+        await removeFromWishlistDB(user.id, itemId);
         await loadWishlist();
       } catch (error) {
         console.error('Error removing from wishlist:', error);

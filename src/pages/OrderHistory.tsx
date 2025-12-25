@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { formatPrice } from '@/lib/currency';
 import { useAuth } from '@/contexts/AuthContext';
-import { getOrders } from '@/lib/database';
+import { getUserOrders } from '@/lib/database';
 
 const OrderHistory = () => {
   const { user, loading } = useAuth();
@@ -23,8 +23,26 @@ const OrderHistory = () => {
 
   const loadOrders = async () => {
     try {
-      const data = await getOrders(user!.id);
-      setOrders(data || []);
+      const data = await getUserOrders(user!.id);
+
+      const normalized = (data || []).map((order: any) => {
+        const items = (order.order_items || []).map((item: any) => ({
+          name: item.product?.name || item.product_name || 'Product',
+          quantity: item.quantity,
+          price: item.price,
+          image: item.product?.images?.[0] || item.product_image,
+        }));
+
+        return {
+          id: order.id,
+          date: order.created_at?.slice(0, 10) || '',
+          status: order.status || 'processing',
+          total: order.total,
+          items,
+        };
+      });
+
+      setOrders(normalized);
     } catch (error) {
       console.error('Error loading orders:', error);
     } finally {
@@ -45,11 +63,13 @@ const OrderHistory = () => {
   }
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Delivered': return 'bg-green-500/10 text-green-500';
-      case 'Shipped': return 'bg-blue-500/10 text-blue-500';
-      case 'Processing': return 'bg-yellow-500/10 text-yellow-500';
-      case 'Cancelled': return 'bg-red-500/10 text-red-500';
+    const normalized = status?.toLowerCase?.() || 'processing';
+    switch (normalized) {
+      case 'delivered': return 'bg-green-500/10 text-green-500';
+      case 'shipped': return 'bg-blue-500/10 text-blue-500';
+      case 'processing': return 'bg-yellow-500/10 text-yellow-500';
+      case 'pending': return 'bg-yellow-500/10 text-yellow-500';
+      case 'cancelled': return 'bg-red-500/10 text-red-500';
       default: return 'bg-muted text-muted-foreground';
     }
   };
