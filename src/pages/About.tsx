@@ -35,7 +35,7 @@ const About = () => (
       <section className="py-20 bg-card">
         <div className="container mx-auto px-4 text-center">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[{ value: '2024', label: 'Founded' }, { value: '10K+', label: 'Happy Customers' }, { value: '50+', label: 'Countries' }, { value: '100%', label: 'Premium Quality' }].map(stat => (
+            {[{ value: '2024', label: 'Founded' }, { value: '2k+', label: 'Happy Customers' }, { value: '4+', label: 'Countries' }, { value: '100%', label: 'Premium Quality' }].map(stat => (
               <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
                 <p className="font-display text-4xl font-bold text-primary mb-2">{stat.value}</p>
                 <p className="text-sm text-muted-foreground">{stat.label}</p>
