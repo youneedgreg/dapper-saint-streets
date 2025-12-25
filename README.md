@@ -59,7 +59,8 @@ All tables have RLS policies for secure data access. See [supabase/schema.sql](s
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ and Bun
+- Node.js 18+
+- npm (or pnpm/yarn/bun if you prefer)
 - Supabase account (free tier works)
 - Git
 
@@ -71,14 +72,14 @@ git clone <your-repo-url>
 cd dapper-saint-streets
 
 # 2. Install dependencies
-bun install
+npm install
 
 # 3. Set up environment variables
 cp .env.example .env
 # Edit .env with your Supabase credentials
 
 # 4. Start development server
-bun run dev
+npm run dev
 ```
 
 ### Supabase Setup
@@ -113,6 +114,14 @@ For detailed setup instructions, see [SUPABASE_SETUP.md](SUPABASE_SETUP.md).
 - **[Supabase API Reference](SUPABASE_API.md)** - All database functions and auth methods
 - **[Supabase Quick Reference](SUPABASE_QUICK_REF.md)** - Common commands and snippets
 - **[Supabase Integration](SUPABASE_INTEGRATION.md)** - Architecture and implementation details
+
+## 📜 Scripts
+
+Run these with `npm run <script>`:
+- `dev` — start Vite dev server
+- `build` — production build
+- `preview` — preview the production build locally
+- `lint` — lint the project
 
 ## 📁 Project Structure
 
@@ -202,7 +211,7 @@ UPDATE users SET role = 'admin' WHERE email = 'admin@example.com';
 
 ```bash
 # Run in development mode
-bun run dev
+npm run dev
 
 # Test authentication flow
 # 1. Register new account
