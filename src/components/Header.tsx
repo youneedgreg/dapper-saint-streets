@@ -5,6 +5,7 @@ import { Menu, X, ShoppingBag, Search, Sun, Moon, User, LogOut } from 'lucide-re
 import { useCart } from '@/hooks/useCart';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import logoLight from '@/assets/logo.png';
 import logoDark from '@/assets/logo-dark.png';
@@ -30,14 +31,28 @@ const Header = () => {
   const { totalItems, setIsCartOpen } = useCart();
   const { theme, toggleTheme } = useTheme();
   const { user, signOut, isAdmin } = useAuth();
+  const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
 
   const logo = theme === 'dark' ? logoLight : logoDark;
 
   const handleSignOut = async () => {
-    await signOut();
-    navigate('/');
+    try {
+      await signOut();
+      navigate('/');
+      toast({
+        title: 'Signed out',
+        description: 'You have been logged out.',
+      });
+    } catch (error) {
+      console.error('Sign out failed', error);
+      toast({
+        title: 'Sign out failed',
+        description: error instanceof Error ? error.message : 'Please try again.',
+        variant: 'destructive',
+      });
+    }
   };
 
   return (

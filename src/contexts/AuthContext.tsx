@@ -102,7 +102,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      // Clear local auth state immediately so UI reacts even if the auth event is slow
+      setUser(null);
+      setSession(null);
+      setIsAdmin(false);
+
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      console.error('Error signing out:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const resetPassword = async (email: string) => {
