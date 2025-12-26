@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { X, Upload, Plus, Minus, Loader } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -74,6 +74,8 @@ const ProductFormModal = ({ open, onOpenChange, product, onSubmit }: ProductForm
   const [isDraggingColors, setIsDraggingColors] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadingColor, setUploadingColor] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const colorInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -144,6 +146,43 @@ const ProductFormModal = ({ open, onOpenChange, product, onSubmit }: ProductForm
     }
   };
 
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = e.target.files;
+    if (!fileList || fileList.length === 0) return;
+    const files = Array.from(fileList).filter(file => file.type.startsWith('image/'));
+    if (files.length === 0) {
+      toast({
+        title: 'Invalid files',
+        description: 'Please choose image files only',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setUploadingImages(true);
+    try {
+      const uploadPromises = files.map(file =>
+        uploadImage('product-images', file, `products/${formData.name || 'uncategorized'}`)
+      );
+      const uploadedUrls = await Promise.all(uploadPromises);
+      setFormData({ ...formData, images: [...formData.images, ...uploadedUrls] });
+      toast({
+        title: 'Success',
+        description: `${files.length} image(s) uploaded successfully`,
+      });
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({
+        title: 'Upload failed',
+        description: error instanceof Error ? error.message : 'Failed to upload images',
+        variant: 'destructive',
+      });
+    } finally {
+      setUploadingImages(false);
+      if (imageInputRef.current) imageInputRef.current.value = '';
+    }
+  };
+
   // Drag-drop handlers for color images
   const handleColorImageDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -198,6 +237,40 @@ const ProductFormModal = ({ open, onOpenChange, product, onSubmit }: ProductForm
       });
     } finally {
       setUploadingColor(false);
+    }
+  };
+
+  const handleColorImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = e.target.files;
+    if (!fileList || fileList.length === 0) return;
+    const file = fileList[0];
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: 'Invalid file',
+        description: 'Please choose an image file',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setUploadingColor(true);
+    try {
+      const url = await uploadImage('product-images', file, `products/${formData.name || 'uncategorized'}/colors`);
+      setNewColor({ ...newColor, image: url });
+      toast({
+        title: 'Success',
+        description: 'Color image uploaded successfully',
+      });
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({
+        title: 'Upload failed',
+        description: error instanceof Error ? error.message : 'Failed to upload color image',
+        variant: 'destructive',
+      });
+    } finally {
+      setUploadingColor(false);
+      if (colorInputRef.current) colorInputRef.current.value = '';
     }
   };
 
@@ -352,6 +425,7 @@ const ProductFormModal = ({ open, onOpenChange, product, onSubmit }: ProductForm
               onDragOver={handleImageDragOver}
               onDragLeave={handleImageDragLeave}
               onDrop={handleImageDrop}
+              onClick={() => imageInputRef.current?.click()}
               className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
                 isDraggingImages
                   ? 'border-primary bg-primary/5'
@@ -368,6 +442,14 @@ const ProductFormModal = ({ open, onOpenChange, product, onSubmit }: ProductForm
               {uploadingImages && (
                 <Loader className="w-4 h-4 mx-auto mt-2 animate-spin" />
               )}
+              <input
+                ref={imageInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={handleImageSelect}
+              />
             </div>
 
             {/* URL input as alternative */}
@@ -465,6 +547,7 @@ const ProductFormModal = ({ open, onOpenChange, product, onSubmit }: ProductForm
               onDragOver={handleColorImageDragOver}
               onDragLeave={handleColorImageDragLeave}
               onDrop={handleColorImageDrop}
+              onClick={() => colorInputRef.current?.click()}
               className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
                 isDraggingColors
                   ? 'border-primary bg-primary/5'
@@ -496,6 +579,13 @@ const ProductFormModal = ({ open, onOpenChange, product, onSubmit }: ProductForm
                   </>
                 )}
               </div>
+              <input
+                ref={colorInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleColorImageSelect}
+              />
             </div>
 
             {/* Color variants list */}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { X, Upload, ImageIcon, Check, Loader } from 'lucide-react';
 import {
@@ -52,6 +52,7 @@ const LookbookFormModal = ({
   });
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -167,6 +168,40 @@ const LookbookFormModal = ({
     }
   };
 
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = e.target.files;
+    if (!fileList || fileList.length === 0) return;
+    const file = fileList[0];
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: 'Invalid file',
+        description: 'Please choose an image file',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const url = await uploadImage('lookbook-images', file, formData.title || 'untitled');
+      setFormData(prev => ({ ...prev, image_url: url }));
+      toast({
+        title: 'Success',
+        description: 'Lookbook image uploaded successfully',
+      });
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({
+        title: 'Upload failed',
+        description: error instanceof Error ? error.message : 'Failed to upload image',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsUploading(false);
+      if (imageInputRef.current) imageInputRef.current.value = '';
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -206,6 +241,7 @@ const LookbookFormModal = ({
             onDragOver={handleImageDragOver}
             onDragLeave={handleImageDragLeave}
             onDrop={handleImageDrop}
+            onClick={() => imageInputRef.current?.click()}
             className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
               isDragging
                 ? 'border-primary bg-primary/5'
@@ -222,6 +258,13 @@ const LookbookFormModal = ({
             {isUploading && (
               <Loader className="w-4 h-4 mx-auto mt-2 animate-spin" />
             )}
+            <input
+              ref={imageInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageSelect}
+            />
           </div>
 
           {/* Image URL Input (alternative method) */}
