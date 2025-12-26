@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard,
@@ -7,6 +7,9 @@ import {
   Users,
   Settings,
   DollarSign,
+  Eye,
+  Edit,
+  Trash2,
   Plus,
   Search,
   Filter,
@@ -17,6 +20,8 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { formatPrice } from '@/lib/currency';
+import { supabase } from '@/lib/supabase';
 import { 
   Table, 
   TableBody, 
@@ -39,11 +44,6 @@ const sidebarLinks = [
   { name: 'Settings', icon: Settings, id: 'settings' },
 ];
 
-const productsData: any[] = [];
-const ordersData: any[] = [];
-const customerData: any[] = [];
-const lookbookItems: any[] = [];
-
 const Admin = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -51,7 +51,67 @@ const Admin = () => {
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [lookbookModalOpen, setLookbookModalOpen] = useState(false);
   const [editingLookbookItem, setEditingLookbookItem] = useState<any>(null);
+  const [productsData, setProductsData] = useState<any[]>([]);
+  const [ordersData, setOrdersData] = useState<any[]>([]);
+  const [customerData, setCustomerData] = useState<any[]>([]);
+  const [lookbookItems, setLookbookItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const [productsRes, ordersRes, lookbookRes, profilesRes] = await Promise.all([
+        supabase.from('products').select('*').order('created_at', { ascending: false }),
+        supabase.from('orders').select('*').order('created_at', { ascending: false }),
+        supabase.from('lookbook_items').select('*').order('display_order', { ascending: true }),
+        supabase.from('profiles').select('*').order('created_at', { ascending: false }),
+      ]);
+
+      if (productsRes.error) throw productsRes.error;
+      if (ordersRes.error) throw ordersRes.error;
+      if (lookbookRes.error) throw lookbookRes.error;
+      if (profilesRes.error) throw profilesRes.error;
+
+      const products = productsRes.data || [];
+      const orders = ordersRes.data || [];
+      const lookbooks = lookbookRes.data || [];
+      const profiles = profilesRes.data || [];
+
+      const customersWithStats = profiles.map(profile => {
+        const profileOrders = orders.filter((order: any) => order.user_id === profile.id);
+        const spent = profileOrders.reduce((sum: number, order: any) => sum + (order.total || 0), 0);
+
+        return {
+          ...profile,
+          orders_count: profileOrders.length,
+          spent,
+        };
+      });
+
+      setProductsData(products);
+      setOrdersData(orders);
+      setLookbookItems(lookbooks);
+      setCustomerData(customersWithStats);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to load admin data';
+      setError(message);
+      toast({
+        title: 'Failed to load admin data',
+        description: message,
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [toast]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handleProductSubmit = (data: any) => {
     // This will connect to Supabase once you set it up
@@ -62,6 +122,26 @@ const Admin = () => {
     setEditingProduct(null);
   };
 
+  const handleDeleteProduct = async (productId: string) => {
+    if (!productId) return;
+    const { error: deleteError } = await supabase.from('products').delete().eq('id', productId);
+
+    if (deleteError) {
+      toast({
+        title: 'Delete failed',
+        description: deleteError.message,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    toast({
+      title: 'Product deleted',
+      description: 'The product has been removed.',
+    });
+    loadData();
+  };
+
   const handleLookbookSubmit = (data: any) => {
     toast({
       title: editingLookbookItem ? "Lookbook Item Updated" : "Lookbook Item Added",
@@ -70,11 +150,54 @@ const Admin = () => {
     setEditingLookbookItem(null);
   };
 
+  const handleDeleteLookbookItem = async (itemId: string) => {
+    if (!itemId) return;
+    const { error: deleteError } = await supabase.from('lookbook_items').delete().eq('id', itemId);
+
+    if (deleteError) {
+      toast({
+        title: 'Delete failed',
+        description: deleteError.message,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    toast({
+      title: 'Lookbook item deleted',
+      description: 'The item has been removed.',
+    });
+    loadData();
+  };
+
+  const totalRevenue = useMemo(
+    () => ordersData.reduce((sum, order) => sum + (order.total || 0), 0),
+    [ordersData]
+  );
+
+  const customerLookup = useMemo(() => {
+    const map: Record<string, any> = {};
+    customerData.forEach((customer) => {
+      map[customer.id] = customer;
+    });
+    return map;
+  }, [customerData]);
+
+  const formatDate = (value?: string) => {
+    if (!value) return '—';
+    const date = new Date(value);
+    return date.toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
   const stats = [
-    { label: 'Total Revenue', value: '—', change: 'Connect data', icon: DollarSign, color: 'text-muted-foreground' },
-    { label: 'Total Orders', value: '—', change: 'Connect data', icon: ShoppingCart, color: 'text-muted-foreground' },
-    { label: 'Total Products', value: productsData.length.toString(), change: 'Connect data', icon: Package, color: 'text-muted-foreground' },
-    { label: 'Total Customers', value: '—', change: 'Connect data', icon: Users, color: 'text-muted-foreground' },
+    { label: 'Total Revenue', value: totalRevenue > 0 ? formatPrice(totalRevenue) : '—', change: 'Live', icon: DollarSign, color: 'text-green-500' },
+    { label: 'Total Orders', value: ordersData.length.toString(), change: 'Live', icon: ShoppingCart, color: 'text-blue-500' },
+    { label: 'Total Products', value: productsData.length.toString(), change: 'Live', icon: Package, color: 'text-purple-500' },
+    { label: 'Total Customers', value: customerData.length.toString(), change: 'Live', icon: Users, color: 'text-primary' },
   ];
 
   const renderEmptyRow = (colSpan: number, message: string) => (
@@ -160,10 +283,13 @@ const Admin = () => {
             </Link>
           </div>
 
-          <div className="mb-6 bg-muted/40 border border-border rounded-lg p-4">
+          <div className="mb-6 bg-muted/40 border border-border rounded-lg p-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <p className="text-sm text-muted-foreground">
-              Live data is not connected yet. Wire up Supabase and real analytics to populate these sections.
+              {error ? `Error loading data: ${error}` : 'Showing live data from Supabase. Refresh after making changes to keep this view in sync.'}
             </p>
+            <Button variant="outline" size="sm" onClick={loadData} disabled={loading}>
+              {loading ? 'Refreshing…' : 'Refresh data'}
+            </Button>
           </div>
 
           {/* Dashboard content */}
@@ -209,9 +335,34 @@ const Admin = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {ordersData.length === 0
-                      ? renderEmptyRow(5, 'No orders yet. Connect Supabase to start tracking real orders.')
-                      : null}
+                    {loading && renderEmptyRow(5, 'Loading orders...')}
+                    {!loading && ordersData.length === 0 && renderEmptyRow(5, 'No orders yet.')}
+                    {!loading && ordersData.slice(0, 5).map(order => {
+                      const customer = customerLookup[order.user_id];
+                      const customerName = customer
+                        ? `${customer.first_name || ''} ${customer.last_name || ''}`.trim() || 'Customer'
+                        : 'Guest';
+                      const statusClass = cn(
+                        'px-2 py-1 rounded-full text-xs font-medium',
+                        order.status === 'delivered' && 'bg-green-500/10 text-green-500',
+                        order.status === 'processing' && 'bg-blue-500/10 text-blue-500',
+                        order.status === 'shipped' && 'bg-purple-500/10 text-purple-500',
+                        order.status === 'pending' && 'bg-yellow-500/10 text-yellow-500',
+                        order.status === 'cancelled' && 'bg-destructive/10 text-destructive'
+                      );
+
+                      return (
+                        <TableRow key={order.id}>
+                          <TableCell className="font-medium">{order.order_number || order.id}</TableCell>
+                          <TableCell>{customerName}</TableCell>
+                          <TableCell className="text-muted-foreground">{formatDate(order.created_at)}</TableCell>
+                          <TableCell>{formatPrice(order.total || 0)}</TableCell>
+                          <TableCell>
+                            <span className={statusClass}>{order.status || 'pending'}</span>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </div>
@@ -262,9 +413,59 @@ const Admin = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {productsData.length === 0
-                      ? renderEmptyRow(6, 'No products found. Add your first product or connect Supabase to load catalog data.')
-                      : null}
+                    {loading && renderEmptyRow(6, 'Loading products...')}
+                    {!loading && productsData.length === 0 && renderEmptyRow(6, 'No products found.')}
+                    {!loading && productsData.map(product => (
+                      <TableRow key={product.id}>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={product.images?.[0] || 'https://via.placeholder.com/64?text=Img'}
+                              alt={product.name}
+                              className="w-12 h-12 object-cover rounded"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/64?text=Img';
+                              }}
+                            />
+                            <div>
+                              <p className="font-medium">{product.name}</p>
+                              <p className="text-sm text-muted-foreground">{product.id}</p>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>{product.category || product.category_id || '—'}</TableCell>
+                        <TableCell>
+                          <span className="font-medium">{formatPrice(product.price)}</span>
+                          {product.original_price && (
+                            <span className="text-sm text-muted-foreground ml-2 line-through">
+                              {formatPrice(product.original_price)}
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell>{product.stock ?? '—'}</TableCell>
+                        <TableCell>
+                          <span className={cn(
+                            'px-2 py-1 rounded-full text-xs font-medium',
+                            product.is_new ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
+                          )}>
+                            {product.is_new ? 'New' : 'Active'}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <Button variant="ghost" size="sm">
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm" onClick={() => { setEditingProduct(product); setProductModalOpen(true); }}>
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm" className="text-destructive" onClick={() => handleDeleteProduct(product.id)}>
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </div>
@@ -315,9 +516,57 @@ const Admin = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {lookbookItems.length === 0
-                      ? renderEmptyRow(6, 'No lookbook items yet. Connect Supabase to manage lookbook content.')
-                      : null}
+                    {loading && renderEmptyRow(6, 'Loading lookbook items...')}
+                    {!loading && lookbookItems.length === 0 && renderEmptyRow(6, 'No lookbook items yet.')}
+                    {!loading && lookbookItems.map(item => (
+                      <TableRow key={item.id}>
+                        <TableCell>
+                          <img
+                            src={item.image_url || 'https://via.placeholder.com/80?text=Img'}
+                            alt={item.title}
+                            className="w-20 h-20 object-cover rounded"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/80?text=Img';
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{item.title}</p>
+                            {item.description && (
+                              <p className="text-sm text-muted-foreground line-clamp-1">
+                                {item.description}
+                              </p>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>{item.collection || '—'}</TableCell>
+                        <TableCell>{item.display_order ?? 0}</TableCell>
+                        <TableCell>
+                          <span className={cn(
+                            'px-2 py-1 rounded-full text-xs font-medium',
+                            item.is_active ? 'bg-green-500/10 text-green-500' : 'bg-muted text-muted-foreground'
+                          )}>
+                            {item.is_active ? 'Active' : 'Inactive'}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <Button variant="ghost" size="sm" onClick={() => { setEditingLookbookItem(item); setLookbookModalOpen(true); }}>
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-destructive"
+                              onClick={() => handleDeleteLookbookItem(item.id)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </div>
@@ -350,9 +599,39 @@ const Admin = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {ordersData.length === 0
-                    ? renderEmptyRow(6, 'Orders will appear once Supabase is connected and customers start checking out.')
-                    : null}
+                  {loading && renderEmptyRow(6, 'Loading orders...')}
+                  {!loading && ordersData.length === 0 && renderEmptyRow(6, 'No orders yet.')}
+                  {!loading && ordersData.map(order => {
+                    const customer = customerLookup[order.user_id];
+                    const customerName = customer
+                      ? `${customer.first_name || ''} ${customer.last_name || ''}`.trim() || 'Customer'
+                      : 'Guest';
+                    const statusClass = cn(
+                      'px-2 py-1 rounded-full text-xs font-medium',
+                      order.status === 'delivered' && 'bg-green-500/10 text-green-500',
+                      order.status === 'processing' && 'bg-blue-500/10 text-blue-500',
+                      order.status === 'shipped' && 'bg-purple-500/10 text-purple-500',
+                      order.status === 'pending' && 'bg-yellow-500/10 text-yellow-500',
+                      order.status === 'cancelled' && 'bg-destructive/10 text-destructive'
+                    );
+
+                    return (
+                      <TableRow key={order.id}>
+                        <TableCell className="font-medium">{order.order_number || order.id}</TableCell>
+                        <TableCell>{customerName}</TableCell>
+                        <TableCell className="text-muted-foreground">{formatDate(order.created_at)}</TableCell>
+                        <TableCell>{formatPrice(order.total || 0)}</TableCell>
+                        <TableCell>
+                          <span className={statusClass}>{order.status || 'pending'}</span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="ghost" size="sm">
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </motion.div>
@@ -372,16 +651,31 @@ const Admin = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Customer</TableHead>
-                    <TableHead>Email</TableHead>
+                    <TableHead>Contact</TableHead>
                     <TableHead>Orders</TableHead>
                     <TableHead>Total Spent</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {customerData.length === 0
-                    ? renderEmptyRow(5, 'Customers will show up after you connect Supabase auth and orders.')
-                    : null}
+                  {loading && renderEmptyRow(5, 'Loading customers...')}
+                  {!loading && customerData.length === 0 && renderEmptyRow(5, 'No customers yet.')}
+                  {!loading && customerData.map(customer => {
+                    const name = `${customer.first_name || ''} ${customer.last_name || ''}`.trim() || 'Customer';
+                    return (
+                      <TableRow key={customer.id}>
+                        <TableCell className="font-medium">{name}</TableCell>
+                        <TableCell className="text-muted-foreground">{customer.phone || '—'}</TableCell>
+                        <TableCell>{customer.orders_count ?? 0}</TableCell>
+                        <TableCell>{customer.spent ? formatPrice(customer.spent) : '—'}</TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="ghost" size="sm">
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </motion.div>
