@@ -11,12 +11,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
+import { formatPrice } from '@/lib/currency';
 
 const Profile = () => {
   const { user, loading } = useAuth();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState({
     firstName: '',
     lastName: '',
@@ -24,34 +26,65 @@ const Profile = () => {
     phone: '',
     address: ''
   });
+  const [orders, setOrders] = useState<any[]>([]);
+  const [addresses, setAddresses] = useState<any[]>([]);
 
   useEffect(() => {
     if (user) {
-      loadProfile();
+      loadProfileData();
     }
   }, [user]);
 
-  const loadProfile = async () => {
+  const loadProfileData = async () => {
+    setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', user?.id)
-        .single();
+      console.log('Loading profile data for user:', user?.id);
+      const [profileRes, ordersRes, addressesRes] = await Promise.all([
+        supabase.from('profiles').select('*').eq('id', user?.id).single(),
+        supabase.from('orders').select('*').eq('user_id', user?.id).order('created_at', { ascending: false }),
+        supabase.from('addresses').select('*').eq('user_id', user?.id).order('is_default', { ascending: false }),
+      ]);
 
-      if (error) throw error;
+      if (profileRes.error && profileRes.error.code !== 'PGRST116') throw profileRes.error;
+      if (ordersRes.error) throw ordersRes.error;
+      if (addressesRes.error) throw addressesRes.error;
 
-      if (data) {
-        setProfile({
-          firstName: data.first_name || '',
-          lastName: data.last_name || '',
-          email: user?.email || '',
-          phone: data.phone || '',
-          address: data.address || ''
+      const profileData = profileRes.data;
+      if (profileData) {
+        console.log('Profile data retrieved:', {
+          firstName: profileData.first_name,
+          lastName: profileData.last_name,
+          phone: profileData.phone,
+          email: user?.email
         });
+        setProfile({
+          firstName: profileData.first_name || '',
+          lastName: profileData.last_name || '',
+          email: user?.email || '',
+          phone: profileData.phone || '',
+          address: ''
+        });
+      } else {
+        console.log('No profile data found, creating with email:', user?.email);
+        setProfile(prev => ({
+          ...prev,
+          email: user?.email || ''
+        }));
       }
+
+      console.log('Orders loaded:', ordersRes.data?.length || 0);
+      console.log('Addresses loaded:', addressesRes.data?.length || 0);
+      setOrders(ordersRes.data || []);
+      setAddresses(addressesRes.data || []);
     } catch (error: any) {
-      console.error('Error loading profile:', error);
+      console.error('Error loading profile data:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to load profile data',
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -59,12 +92,11 @@ const Profile = () => {
     setIsSaving(true);
     try {
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           first_name: profile.firstName,
           last_name: profile.lastName,
           phone: profile.phone,
-          address: profile.address
         })
         .eq('id', user?.id);
 
@@ -86,7 +118,7 @@ const Profile = () => {
     }
   };
 
-  if (loading) {
+  if (loading || isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -97,12 +129,6 @@ const Profile = () => {
   if (!user) {
     return <Navigate to="/login" replace />;
   }
-
-  const mockOrders = [
-    { id: 'DS-20240115-0001', date: '2024-01-15', status: 'Delivered', total: 48500, items: 2 },
-    { id: 'DS-20240110-0023', date: '2024-01-10', status: 'Shipped', total: 28500, items: 1 },
-    { id: 'DS-20240105-0045', date: '2024-01-05', status: 'Delivered', total: 74500, items: 3 },
-  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -245,24 +271,30 @@ const Profile = () => {
                   <div className="p-6 border-b border-border">
                     <h2 className="font-display text-xl font-bold">Order History</h2>
                   </div>
-                  {mockOrders.length > 0 ? (
+                  {orders.length > 0 ? (
                     <div className="divide-y divide-border">
-                      {mockOrders.map((order) => (
+                      {orders.map((order) => (
                         <div key={order.id} className="p-6 flex items-center justify-between">
                           <div>
-                            <p className="font-medium">{order.id}</p>
+                            <p className="font-medium">{order.order_number}</p>
                             <p className="text-sm text-muted-foreground">
-                              {order.date} · {order.items} items
+                              {new Date(order.created_at).toLocaleDateString()}
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className="font-medium">KSh {order.total.toLocaleString()}</p>
-                            <span className={`text-sm px-2 py-1 rounded-full ${
-                              order.status === 'Delivered' 
+                            <p className="font-medium">KSh {(order.total || 0).toLocaleString()}</p>
+                            <span className={`text-sm px-2 py-1 rounded-full inline-block mt-1 ${
+                              order.status === 'delivered' 
                                 ? 'bg-green-500/10 text-green-500' 
-                                : 'bg-blue-500/10 text-blue-500'
+                                : order.status === 'shipped'
+                                ? 'bg-blue-500/10 text-blue-500'
+                                : order.status === 'pending'
+                                ? 'bg-yellow-500/10 text-yellow-500'
+                                : order.status === 'cancelled'
+                                ? 'bg-red-500/10 text-red-500'
+                                : 'bg-gray-500/10 text-gray-500'
                             }`}>
-                              {order.status}
+                              {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                             </span>
                           </div>
                         </div>

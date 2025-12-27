@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ShoppingBag, Search, Sun, Moon, User, LogOut } from 'lucide-react';
@@ -7,6 +7,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/lib/supabase';
 import logoLight from '@/assets/logo.png';
 import logoDark from '@/assets/logo-dark.png';
 import SearchModal from './SearchModal';
@@ -28,6 +29,7 @@ const navLinks = [
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [firstName, setFirstName] = useState<string>('');
   const { totalItems, setIsCartOpen } = useCart();
   const { theme, toggleTheme } = useTheme();
   const { user, signOut, isAdmin } = useAuth();
@@ -36,6 +38,41 @@ const Header = () => {
   const navigate = useNavigate();
 
   const logo = theme === 'dark' ? logoLight : logoDark;
+
+  useEffect(() => {
+    if (user) {
+      loadUserProfile();
+    } else {
+      setFirstName('');
+    }
+  }, [user]);
+
+  const loadUserProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('first_name')
+        .eq('id', user?.id);
+
+      if (error) {
+        console.error('Error loading profile:', error);
+        return;
+      }
+
+      // data is an array, get the first element
+      if (data && data.length > 0 && data[0]?.first_name) {
+        const firstName = data[0].first_name;
+        const firstLetter = firstName.charAt(0).toUpperCase();
+        console.log('User first name:', firstName);
+        console.log('First letter of user name:', firstLetter);
+        setFirstName(firstName);
+      } else {
+        console.log('No first name found for user, using default avatar');
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    }
+  };
 
   const handleSignOut = async () => {
     try {
@@ -149,10 +186,16 @@ const Header = () => {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className="p-2 text-foreground hover:text-muted-foreground transition-colors"
+                        className="p-2 text-foreground hover:text-muted-foreground transition-colors flex items-center justify-center"
                         aria-label="Account"
                       >
-                        <User className="w-5 h-5" strokeWidth={1.5} />
+                        {firstName ? (
+                          <div className="w-5 h-5 rounded-full bg-foreground text-background text-xs font-bold flex items-center justify-center">
+                            {firstName.charAt(0).toUpperCase()}
+                          </div>
+                        ) : (
+                          <User className="w-5 h-5" strokeWidth={1.5} />
+                        )}
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">

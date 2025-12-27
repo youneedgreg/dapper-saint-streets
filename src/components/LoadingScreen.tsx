@@ -26,7 +26,17 @@ const LoadingScreen = ({ onComplete = () => {} }: LoadingScreenProps) => {
       });
     }, 25);
 
-    return () => clearInterval(timer);
+    // Force complete after 12 seconds to prevent infinite loading
+    const forceCompleteTimer = setTimeout(() => {
+      setProgress(100);
+      clearInterval(timer);
+      setTimeout(onComplete, 400);
+    }, 12000);
+
+    return () => {
+      clearInterval(timer);
+      clearTimeout(forceCompleteTimer);
+    };
   }, [onComplete]);
 
   return (

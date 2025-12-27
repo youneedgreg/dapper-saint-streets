@@ -32,13 +32,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+    let hasInitialized = false;
+    const timeoutId = setTimeout(() => {
+      if (isMounted && !hasInitialized) {
+        console.warn('Auth initialization timeout');
+        setLoading(false);
+      }
+    }, 10000); // 10 second timeout
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!isMounted) return;
+      hasInitialized = true;
+      clearTimeout(timeoutId);
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
         checkAdminStatus(session.user.id);
       } else {
+        setLoading(false);
+      }
+    }).catch((error) => {
+      if (isMounted) {
+        hasInitialized = true;
+        clearTimeout(timeoutId);
+        console.error('Error getting session:', error);
         setLoading(false);
       }
     });
@@ -47,17 +66,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (!isMounted) return;
+      hasInitialized = true;
+      clearTimeout(timeoutId);
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
         await checkAdminStatus(session.user.id);
       } else {
         setIsAdmin(false);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const checkAdminStatus = async (userId: string) => {
