@@ -32,7 +32,7 @@ const Header = () => {
   const [firstName, setFirstName] = useState<string>('');
   const { totalItems, setIsCartOpen } = useCart();
   const { theme, toggleTheme } = useTheme();
-  const { user, signOut, isAdmin } = useAuth();
+  const { user, signOut, isAdmin, loading } = useAuth();
   const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
@@ -40,12 +40,12 @@ const Header = () => {
   const logo = theme === 'dark' ? logoLight : logoDark;
 
   useEffect(() => {
-    if (user) {
+    if (!loading && user) {
       loadUserProfile();
-    } else {
+    } else if (!user) {
       setFirstName('');
     }
-  }, [user]);
+  }, [user, loading, isAdmin]);
 
   const loadUserProfile = async () => {
     try {
@@ -55,22 +55,15 @@ const Header = () => {
         .eq('id', user?.id);
 
       if (error) {
-        console.error('Error loading profile:', error);
+        console.error('[Header] loadUserProfile: error', error.message);
         return;
       }
 
-      // data is an array, get the first element
       if (data && data.length > 0 && data[0]?.first_name) {
-        const firstName = data[0].first_name;
-        const firstLetter = firstName.charAt(0).toUpperCase();
-        console.log('User first name:', firstName);
-        console.log('First letter of user name:', firstLetter);
-        setFirstName(firstName);
-      } else {
-        console.log('No first name found for user, using default avatar');
+        setFirstName(data[0].first_name);
       }
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error('[Header] loadUserProfile: exception', error instanceof Error ? error.message : String(error));
     }
   };
 
@@ -83,7 +76,7 @@ const Header = () => {
         description: 'You have been logged out.',
       });
     } catch (error) {
-      console.error('Sign out failed', error);
+      console.error('[Header] signOut: error', error instanceof Error ? error.message : String(error));
       toast({
         title: 'Sign out failed',
         description: error instanceof Error ? error.message : 'Please try again.',
@@ -181,8 +174,15 @@ const Header = () => {
                   )}
                 </button>
                 
-                {/* User dropdown */}
-                {user ? (
+                {/* User dropdown (respect auth loading to avoid flicker) */}
+                {loading ? (
+                  <button
+                    className="p-2 text-foreground hover:text-muted-foreground transition-colors"
+                    aria-label="Account (loading)"
+                  >
+                    <User className="w-5 h-5" strokeWidth={1.5} />
+                  </button>
+                ) : user ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
