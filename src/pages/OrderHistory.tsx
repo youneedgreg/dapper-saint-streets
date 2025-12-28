@@ -16,6 +16,7 @@ const OrderHistory = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    console.log('[OrderHistory] auth state', { loading, hasUser: !!user })
     if (user) {
       loadOrders();
     }

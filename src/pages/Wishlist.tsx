@@ -20,6 +20,10 @@ const Wishlist = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    console.log('[Wishlist] auth state', { authLoading, hasUser: !!user })
+  }, [authLoading, user])
+
+  useEffect(() => {
     if (user) {
       loadWishlist();
     } else {
