@@ -30,6 +30,8 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [firstName, setFirstName] = useState<string>('');
+  const [isScrolled, setIsScrolled] = useState(false);
+
   const { totalItems, setIsCartOpen } = useCart();
   const { theme, toggleTheme } = useTheme();
   const { user, signOut, isAdmin, loading } = useAuth();
@@ -37,7 +39,17 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const logo = theme === 'dark' ? logoLight : logoDark;
+  const logo = (!isScrolled && location.pathname === '/') ? logoLight : (theme === 'dark' ? logoLight : logoDark);
+  const textColor = (!isScrolled && location.pathname === '/') ? "text-white" : "text-foreground";
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     if (!loading && user) {
@@ -87,172 +99,116 @@ const Header = () => {
 
   return (
     <>
-      <motion.header 
-        className="fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm"
+      <motion.header
+        className={cn(
+          "fixed top-0 left-0 right-0 z-40 transition-all duration-300",
+          isScrolled ? "bg-background/95 backdrop-blur-sm py-2 shadow-sm" : "bg-transparent py-4"
+        )}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
       >
-        {/* Top announcement bar */}
-        <div className="border-b border-border">
-          <div className="container mx-auto px-6">
-            <p className="text-center text-xs tracking-widest uppercase py-2 text-muted-foreground">
-              Free Shipping on Orders Over KSh 10,000
-            </p>
-          </div>
-        </div>
+        <div className="container mx-auto px-6">
+          <div className="flex items-center justify-between">
 
-        {/* Main header */}
-        <div className="border-b border-border">
-          <div className="container mx-auto px-6">
-            <div className="flex items-center justify-between h-16 relative">
-              {/* Left nav - Desktop */}
-              <nav className="hidden md:flex items-center gap-8 flex-1">
-                {navLinks.slice(0, 2).map(link => (
-                  <Link
-                    key={link.name}
-                    to={link.href}
-                    className={cn(
-                      "text-xs tracking-[0.2em] uppercase transition-colors",
-                      location.pathname === link.href
-                        ? "text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    {link.name}
-                  </Link>
-                ))}
-              </nav>
-
-              {/* Mobile menu button */}
+            {/* Left Actions: Menu + Search */}
+            <div className="flex items-center gap-4 flex-1">
               <button
-                className="md:hidden p-2 -ml-2 text-foreground"
+                className={cn("p-2 -ml-2 transition-colors hover:opacity-70", textColor)}
                 onClick={() => setIsMobileMenuOpen(true)}
                 aria-label="Open menu"
               >
-                <Menu className="w-5 h-5" strokeWidth={1.5} />
+                <Menu className="w-6 h-6" strokeWidth={1.5} />
               </button>
+              <button
+                className={cn(
+                  "p-2 transition-colors hidden md:block hover:opacity-70",
+                  textColor
+                )}
+                onClick={() => setIsSearchOpen(true)}
+                aria-label="Search"
+              >
+                <Search className="w-5 h-5" strokeWidth={1.5} />
+              </button>
+            </div>
 
-              {/* Logo - Centered */}
-              <Link to="/" className="absolute left-1/2 -translate-x-1/2 z-10">
-                <img 
-                  src={logo} 
-                  alt="Dapper Sainte" 
-                  className="h-10 w-auto"
+            {/* Center: Logo */}
+            <div className="flex-1 flex justify-center">
+              <Link to="/">
+                <img
+                  src={logo}
+                  alt="Dapper Sainte"
+                  className="h-10 md:h-16 w-auto transition-all duration-300 transform hover:scale-105" // Made logo slightly bigger
                 />
               </Link>
+            </div>
 
-              {/* Right nav - Desktop */}
-              <nav className="hidden md:flex items-center gap-8 flex-1 justify-end">
-                {navLinks.slice(2).map(link => (
-                  <Link
-                    key={link.name}
-                    to={link.href}
-                    className={cn(
-                      "text-xs tracking-[0.2em] uppercase transition-colors",
-                      location.pathname === link.href
-                        ? "text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    {link.name}
-                  </Link>
-                ))}
-              </nav>
+            {/* Right Actions: User + Cart */}
+            <div className="flex items-center justify-end gap-2 flex-1">
+              {/* Search on mobile moves here or stays in menu? Let's add search icon here for mobile too */}
+              <button
+                className={cn("p-2 transition-colors md:hidden hover:opacity-70", textColor)}
+                onClick={() => setIsSearchOpen(true)}
+                aria-label="Search"
+              >
+                <Search className="w-5 h-5" strokeWidth={1.5} />
+              </button>
 
-              {/* Right icons */}
-              <div className="flex items-center gap-1">
-                <button
-                  className="p-2 text-foreground hover:text-muted-foreground transition-colors"
-                  onClick={toggleTheme}
-                  aria-label="Toggle theme"
-                >
-                  {theme === 'dark' ? (
-                    <Sun className="w-5 h-5" strokeWidth={1.5} />
-                  ) : (
-                    <Moon className="w-5 h-5" strokeWidth={1.5} />
-                  )}
-                </button>
-                
-                {/* User dropdown (respect auth loading to avoid flicker) */}
-                {loading ? (
-                  <button
-                    className="p-2 text-foreground hover:text-muted-foreground transition-colors"
-                    aria-label="Account (loading)"
-                  >
-                    <User className="w-5 h-5" strokeWidth={1.5} />
-                  </button>
-                ) : user ? (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        className="p-2 text-foreground hover:text-muted-foreground transition-colors flex items-center justify-center"
-                        aria-label="Account"
-                      >
-                        {firstName ? (
-                          <div className="w-5 h-5 rounded-full bg-foreground text-background text-xs font-bold flex items-center justify-center">
-                            {firstName.charAt(0).toUpperCase()}
-                          </div>
-                        ) : (
-                          <User className="w-5 h-5" strokeWidth={1.5} />
-                        )}
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
-                      <DropdownMenuItem asChild>
-                        <Link to="/profile" className="cursor-pointer">
-                          Profile
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/orders" className="cursor-pointer">
-                          Order History
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/wishlist" className="cursor-pointer">
-                          Wishlist
-                        </Link>
-                      </DropdownMenuItem>
-                      {isAdmin && (
-                        <>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem asChild>
-                            <Link to="/admin" className="cursor-pointer">
-                              Admin Panel
-                            </Link>
-                          </DropdownMenuItem>
-                        </>
+              <button
+                className={cn("p-2 transition-colors hidden md:block hover:opacity-70", textColor)}
+                onClick={toggleTheme}
+                aria-label="Toggle theme"
+              >
+                {theme === 'dark' ? <Sun className="w-5 h-5" strokeWidth={1.5} /> : <Moon className="w-5 h-5" strokeWidth={1.5} />}
+              </button>
+
+              {loading ? (
+                <button className={cn("p-2", textColor)}><User className="w-5 h-5" strokeWidth={1.5} /></button>
+              ) : user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className={cn("p-2 transition-colors flex items-center gap-2 hover:opacity-70", textColor)}>
+                      {firstName ? (
+                        <div className={cn("w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center",
+                          !isScrolled && location.pathname === '/' ? "bg-white text-black" : "bg-foreground text-background"
+                        )}>
+                          {firstName.charAt(0).toUpperCase()}
+                        </div>
+                      ) : (
+                        <User className="w-5 h-5" strokeWidth={1.5} />
                       )}
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
-                        <LogOut className="w-4 h-4 mr-2" />
-                        Sign Out
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                ) : (
-                  <Link
-                    to="/login"
-                    className="p-2 text-foreground hover:text-muted-foreground transition-colors"
-                    aria-label="Account"
-                  >
-                    <User className="w-5 h-5" strokeWidth={1.5} />
-                  </Link>
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48 bg-background border-border">
+                    <DropdownMenuItem asChild><Link to="/profile">Profile</Link></DropdownMenuItem>
+                    <DropdownMenuItem asChild><Link to="/orders">Orders</Link></DropdownMenuItem>
+                    <DropdownMenuItem asChild><Link to="/wishlist">Wishlist</Link></DropdownMenuItem>
+                    {isAdmin && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild><Link to="/admin">Admin Panel</Link></DropdownMenuItem>
+                      </>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut}><LogOut className="w-4 h-4 mr-2" /> Sign Out</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Link to="/login" className={cn("p-2 hover:opacity-70", textColor)}><User className="w-5 h-5" strokeWidth={1.5} /></Link>
+              )}
+
+              <button
+                className={cn("p-2 transition-colors relative hover:opacity-70", textColor)}
+                onClick={() => setIsCartOpen(true)}
+                aria-label="Cart"
+              >
+                <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
+                {totalItems > 0 && (
+                  <span className="absolute top-0 right-0 w-4 h-4 bg-red-600 text-white text-[10px] font-medium flex items-center justify-center rounded-full">
+                    {totalItems}
+                  </span>
                 )}
-                <button
-                  className="p-2 text-foreground hover:text-muted-foreground transition-colors relative"
-                  onClick={() => setIsCartOpen(true)}
-                  aria-label="Cart"
-                >
-                  <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
-                  {totalItems > 0 && (
-                    <span className="absolute top-0 right-0 w-4 h-4 bg-foreground text-background text-[10px] font-medium flex items-center justify-center">
-                      {totalItems}
-                    </span>
-                  )}
-                </button>
-              </div>
+              </button>
             </div>
           </div>
         </div>
@@ -261,7 +217,7 @@ const Header = () => {
       {/* Search Modal */}
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
-      {/* Mobile menu */}
+      {/* Side Menu (Mobile & Desktop Trigger) */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
@@ -273,73 +229,45 @@ const Header = () => {
               onClick={() => setIsMobileMenuOpen(false)}
             />
             <motion.div
-              className="fixed inset-y-0 left-0 w-full max-w-sm bg-background/95 backdrop-blur-md z-50 border-r border-border"
+              className="fixed inset-y-0 left-0 w-full max-w-sm bg-background border-r border-border z-50 p-6 shadow-2xl"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              transition={{ type: "tween", duration: 0.3 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
             >
-              <div className="flex flex-col h-full">
-                <div className="flex items-center justify-between p-6 border-b border-border">
-                  <img 
-                    src={logo} 
-                    alt="Dapper Sainte" 
-                    className="h-8 w-auto"
-                  />
-                  <button
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="p-2 text-foreground"
-                    aria-label="Close menu"
-                  >
-                    <X className="w-5 h-5" strokeWidth={1.5} />
-                  </button>
-                </div>
+              <div className="flex items-center justify-between mb-8">
+                <img src={logo} alt="Dapper" className="h-6 w-auto" />
+                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-foreground hover:bg-muted rounded-full">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
 
-                <nav className="flex-1 p-8">
-                  <ul className="space-y-6">
-                    {navLinks.map((link, index) => (
-                      <motion.li
-                        key={link.name}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
+              <nav>
+                <ul className="space-y-4">
+                  {navLinks.map((link, idx) => (
+                    <motion.li
+                      key={link.name}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 + idx * 0.05 }}
+                    >
+                      <Link
+                        to={link.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="text-3xl font-display font-medium text-foreground hover:text-muted-foreground transition-colors block"
                       >
-                        <Link
-                          to={link.href}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className={cn(
-                            "text-2xl font-display tracking-wider block",
-                            location.pathname === link.href
-                              ? "text-foreground"
-                              : "text-muted-foreground"
-                          )}
-                        >
-                          {link.name}
-                        </Link>
-                      </motion.li>
-                    ))}
-                  </ul>
-                </nav>
+                        {link.name}
+                      </Link>
+                    </motion.li>
+                  ))}
+                </ul>
+              </nav>
 
-                {/* Theme toggle in mobile menu */}
-                <div className="p-6 border-t border-border">
-                  <button
-                    className="flex items-center gap-3 text-muted-foreground"
-                    onClick={toggleTheme}
-                  >
-                    {theme === 'dark' ? (
-                      <>
-                        <Sun className="w-5 h-5" strokeWidth={1.5} />
-                        <span className="text-sm">Light Mode</span>
-                      </>
-                    ) : (
-                      <>
-                        <Moon className="w-5 h-5" strokeWidth={1.5} />
-                        <span className="text-sm">Dark Mode</span>
-                      </>
-                    )}
-                  </button>
-                </div>
+              <div className="absolute bottom-8 left-6 right-6">
+                <button onClick={toggleTheme} className="flex items-center gap-2 text-sm text-foreground/70 hover:text-foreground">
+                  {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                  <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+                </button>
               </div>
             </motion.div>
           </>

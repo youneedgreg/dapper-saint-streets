@@ -19,7 +19,7 @@ const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background image */}
-      <motion.div 
+      <motion.div
         className="absolute inset-0"
         initial={{ scale: 1.1 }}
         animate={{ scale: 1 }}
@@ -48,7 +48,7 @@ const HeroSection = () => {
 
           {/* Main heading */}
           <motion.h1
-            className="font-display text-5xl md:text-7xl lg:text-8xl font-medium leading-[0.95] mb-8 tracking-tight text-white"
+            className="font-cinzel text-5xl md:text-7xl lg:text-8xl font-medium leading-[0.95] mb-8 tracking-tight text-white"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
@@ -87,7 +87,7 @@ const HeroSection = () => {
               className={`inline-block h-12 px-12 rounded-full border text-xs tracking-[0.2em] uppercase font-medium leading-[48px] transition-colors shadow-lg backdrop-blur-sm
                 ${theme === 'dark'
                   ? 'bg-white text-black border-white/30 hover:bg-white/90'
-                  : 'bg-black text-white border-black/20 hover:bg-black/90'}`}
+                  : 'bg-white text-black border-white/20 hover:bg-white/90'}`}
             >
               Shop Now
             </Link>

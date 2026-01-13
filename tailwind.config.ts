@@ -34,10 +34,12 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
       },
-      fontFamily: { 
-        display: ["Cinzel", "serif"], 
-        gothic: ["UnifrakturMaguntia", "cursive"],
-        body: ["Inter", "sans-serif"] 
+      fontFamily: {
+        display: ["Oswald", "sans-serif"],
+        gothic: ["Oswald", "sans-serif"],
+        oswald: ["Oswald", "sans-serif"],
+        cinzel: ["Cinzel", "serif"],
+        body: ["Inter", "sans-serif"]
       },
       borderRadius: { lg: "var(--radius)", md: "calc(var(--radius) - 2px)", sm: "calc(var(--radius) - 4px)" },
       keyframes: {
@@ -64,8 +66,8 @@ export default {
           "50%": { height: "24px" }
         },
       },
-      animation: { 
-        "accordion-down": "accordion-down 0.2s ease-out", 
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-up": "fade-up 0.8s ease-out forwards",
         "fade-in": "fade-in 0.5s ease-out forwards",

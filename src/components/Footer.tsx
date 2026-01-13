@@ -20,87 +20,21 @@ const TikTokIcon = ({ className }: { className?: string }) => (
 
 const Footer = () => {
   return (
-    <footer className="bg-background border-t border-border">
-      <div className="container mx-auto px-6 py-16 md:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8">
-          {/* Brand */}
-          <div className="md:col-span-4">
-            <Link to="/" className="inline-block mb-6">
-              <img src={logo} alt="Dapper Sainte" className="h-10 w-auto" />
+    <footer className="bg-background border-t border-border pt-20 pb-10 overflow-hidden">
+      <div className="container mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+          {/* Brand Column */}
+          <div className="col-span-1 md:col-span-1">
+            <Link to="/" className="inline-block mb-8">
+              <img src={logo} alt="Dapper Sainte" className="h-8 w-auto" />
             </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-              Don't blend in, Rule the scene. Premium streetwear for those who refuse to blend in.
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mb-6">
+              Premium streetwear. <br />Designed for the bold.
             </p>
-          </div>
-
-          {/* Links */}
-          <div className="md:col-span-2">
-            <h4 className="text-xs tracking-[0.2em] uppercase mb-6 text-foreground">
-              Shop
-            </h4>
-            <ul className="space-y-3">
-              {['New Arrivals', 'Hoodies', 'T-Shirts', 'Jackets', 'Accessories'].map(item => (
-                <li key={item}>
-                  <Link
-                    to="/shop"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {item}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="md:col-span-2">
-            <h4 className="text-xs tracking-[0.2em] uppercase mb-6 text-foreground">
-              Company
-            </h4>
-            <ul className="space-y-3">
-              {[
-                { name: 'About', href: '/about' },
-                { name: 'Contact', href: '/contact' },
-                { name: 'Lookbook', href: '/lookbook' },
-              ].map(item => (
-                <li key={item.name}>
-                  <Link
-                    to={item.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="md:col-span-2">
-            <h4 className="text-xs tracking-[0.2em] uppercase mb-6 text-foreground">
-              Help
-            </h4>
-            <ul className="space-y-3">
-              {['Shipping', 'Returns', 'FAQ', 'Size Guide'].map(item => (
-                <li key={item}>
-                  <Link
-                    to="#"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {item}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Social */}
-          <div className="md:col-span-2">
-            <h4 className="text-xs tracking-[0.2em] uppercase mb-6 text-foreground">
-              Follow
-            </h4>
             <div className="flex gap-4">
               <a
                 href="https://instagram.com/dappersainteinc"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-foreground hover:text-muted-foreground transition-colors"
                 aria-label="Instagram"
                 target="_blank"
                 rel="noreferrer"
@@ -109,7 +43,7 @@ const Footer = () => {
               </a>
               <a
                 href="https://www.tiktok.com/@dappersainteinc"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-foreground hover:text-muted-foreground transition-colors"
                 aria-label="TikTok"
                 target="_blank"
                 rel="noreferrer"
@@ -118,20 +52,63 @@ const Footer = () => {
               </a>
             </div>
           </div>
+
+          {/* Links Grid */}
+          <div className="col-span-1 md:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-8">
+            <div>
+              <h4 className="font-display text-sm tracking-wider uppercase mb-6 text-foreground">Shop</h4>
+              <ul className="space-y-4">
+                {['New Arrivals', 'Hoodies', 'T-Shirts', 'Accessories'].map(item => (
+                  <li key={item}>
+                    <Link to="/shop" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                      {item}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-display text-sm tracking-wider uppercase mb-6 text-foreground">Company</h4>
+              <ul className="space-y-4">
+                {[
+                  { name: 'About', href: '/about' },
+                  { name: 'Contact', href: '/contact' },
+                  { name: 'Lookbook', href: '/lookbook' },
+                ].map(item => (
+                  <li key={item.name}>
+                    <Link to={item.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-display text-sm tracking-wider uppercase mb-6 text-foreground">Support</h4>
+              <ul className="space-y-4">
+                {['Shipping', 'Returns', 'Size Guide', 'FAQ'].map(item => (
+                  <li key={item}>
+                    <Link to="/faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                      {item}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
 
-        {/* Bottom bar */}
-        <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-muted-foreground">
-            © 2024 Dapper Sainte. All rights reserved.
-          </p>
-          <div className="flex gap-6">
-            <Link to="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-              Privacy
-            </Link>
-            <Link to="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-              Terms
-            </Link>
+        {/* Big Branding */}
+        <div className="border-t border-border pt-10 flex flex-col items-center">
+          <h1 className="font-oswald text-[16vw] leading-none text-foreground/5 tracking-tighter select-none pointer-events-none uppercase">
+            Dapper Sainte
+          </h1>
+          <div className="w-full flex justify-between items-center text-xs text-muted-foreground mt-8">
+            <p>© 2024 Dapper Sainte Inc.</p>
+            <div className="flex gap-6">
+              <Link to="/privacy-policy" className="hover:text-foreground">Privacy</Link>
+              <Link to="/terms-of-service" className="hover:text-foreground">Terms</Link>
+            </div>
           </div>
         </div>
       </div>
