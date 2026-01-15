@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ShoppingBag, Search, Sun, Moon, User, LogOut } from 'lucide-react';
+import { Menu, X, ShoppingBag, Search, User, LogOut, Heart, Bell, Sun, Moon } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/contexts/AuthContext';
@@ -18,17 +18,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-
-const navLinks = [
-  { name: 'Shop', href: '/shop' },
-  { name: 'Lookbook', href: '/lookbook' },
-  { name: 'About', href: '/about' },
-  { name: 'Contact', href: '/contact' },
-];
+import MenuCollectionPreview from './MenuCollectionPreview';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeCollection, setActiveCollection] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+
   const [firstName, setFirstName] = useState<string>('');
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -39,8 +35,15 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Always use light logo (white) on top for this specific dark/premium aesthetic unless scrolled on white bg
+  // But strictly following "Represent" style usually implies a dark or transparent header with white text initially.
+  // We'll stick to dynamic based on scroll for usability.
   const logo = (!isScrolled && location.pathname === '/') ? logoLight : (theme === 'dark' ? logoLight : logoDark);
   const textColor = (!isScrolled && location.pathname === '/') ? "text-white" : "text-foreground";
+  const linkClass = cn(
+    "text-xs font-bold tracking-[0.15em] uppercase hover:text-white/70 transition-colors",
+    textColor
+  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -101,123 +104,54 @@ const Header = () => {
     <>
       <motion.header
         className={cn(
-          "fixed top-0 left-0 right-0 z-40 transition-all duration-300",
-          isScrolled ? "bg-background/95 backdrop-blur-sm py-2 shadow-sm" : "bg-transparent py-4"
+          "fixed top-0 left-0 right-0 z-40 transition-all duration-300 font-sans",
+          isScrolled ? "bg-background/95 backdrop-blur-md py-4 shadow-sm" : "bg-transparent py-6"
         )}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
       >
-        <div className="container mx-auto px-6">
-          <div className="flex items-center justify-between">
-
-            {/* Left Actions: Menu + Search */}
-            <div className="flex items-center gap-4 flex-1">
-              <button
-                className={cn("p-2 -ml-2 transition-colors hover:opacity-70", textColor)}
-                onClick={() => setIsMobileMenuOpen(true)}
-                aria-label="Open menu"
-              >
-                <Menu className="w-6 h-6" strokeWidth={1.5} />
-              </button>
-              <button
-                className={cn(
-                  "p-2 transition-colors hidden md:block hover:opacity-70",
-                  textColor
-                )}
-                onClick={() => setIsSearchOpen(true)}
-                aria-label="Search"
-              >
-                <Search className="w-5 h-5" strokeWidth={1.5} />
-              </button>
-            </div>
-
-            {/* Center: Logo */}
-            <div className="flex-1 flex justify-center">
-              <Link to="/">
-                <img
-                  src={logo}
-                  alt="Dapper Sainte"
-                  className="h-10 md:h-16 w-auto transition-all duration-300 transform hover:scale-105" // Made logo slightly bigger
-                />
-              </Link>
-            </div>
-
-            {/* Right Actions: User + Cart */}
-            <div className="flex items-center justify-end gap-2 flex-1">
-              {/* Search on mobile moves here or stays in menu? Let's add search icon here for mobile too */}
-              <button
-                className={cn("p-2 transition-colors md:hidden hover:opacity-70", textColor)}
-                onClick={() => setIsSearchOpen(true)}
-                aria-label="Search"
-              >
-                <Search className="w-5 h-5" strokeWidth={1.5} />
-              </button>
-
-              <button
-                className={cn("p-2 transition-colors hidden md:block hover:opacity-70", textColor)}
-                onClick={toggleTheme}
-                aria-label="Toggle theme"
-              >
-                {theme === 'dark' ? <Sun className="w-5 h-5" strokeWidth={1.5} /> : <Moon className="w-5 h-5" strokeWidth={1.5} />}
-              </button>
-
-              {loading ? (
-                <button className={cn("p-2", textColor)}><User className="w-5 h-5" strokeWidth={1.5} /></button>
-              ) : user ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className={cn("p-2 transition-colors flex items-center gap-2 hover:opacity-70", textColor)}>
-                      {firstName ? (
-                        <div className={cn("w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center",
-                          !isScrolled && location.pathname === '/' ? "bg-white text-black" : "bg-foreground text-background"
-                        )}>
-                          {firstName.charAt(0).toUpperCase()}
-                        </div>
-                      ) : (
-                        <User className="w-5 h-5" strokeWidth={1.5} />
-                      )}
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48 bg-background border-border">
-                    <DropdownMenuItem asChild><Link to="/profile">Profile</Link></DropdownMenuItem>
-                    <DropdownMenuItem asChild><Link to="/orders">Orders</Link></DropdownMenuItem>
-                    <DropdownMenuItem asChild><Link to="/wishlist">Wishlist</Link></DropdownMenuItem>
-                    {isAdmin && (
-                      <>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild><Link to="/admin">Admin Panel</Link></DropdownMenuItem>
-                      </>
-                    )}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleSignOut}><LogOut className="w-4 h-4 mr-2" /> Sign Out</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <Link to="/login" className={cn("p-2 hover:opacity-70", textColor)}><User className="w-5 h-5" strokeWidth={1.5} /></Link>
-              )}
-
-              <button
-                className={cn("p-2 transition-colors relative hover:opacity-70", textColor)}
-                onClick={() => setIsCartOpen(true)}
-                aria-label="Cart"
-              >
-                <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
-                {totalItems > 0 && (
-                  <span className="absolute top-0 right-0 w-4 h-4 bg-red-600 text-white text-[10px] font-medium flex items-center justify-center rounded-full">
-                    {totalItems}
-                  </span>
-                )}
-              </button>
-            </div>
+        <div className="container mx-auto px-6 lg:px-12 flex items-center justify-between">
+          {/* Left: Menu & Nav */}
+          <div className="flex items-center gap-4 md:gap-6">
+            <button
+              className={cn("p-2 -ml-2 transition-colors hover:opacity-70", textColor)}
+              onClick={() => setIsMobileMenuOpen(true)}
+              onMouseEnter={() => setIsMobileMenuOpen(true)}
+              aria-label="Open menu"
+            >
+              <Menu className="w-6 h-6" strokeWidth={1.5} />
+            </button>
+            <nav className="hidden md:flex items-center gap-6">
+              <Link to="/shop" className={linkClass}>Shop</Link>
+              <Link to="/lookbook" className={linkClass}>Lookbook</Link>
+            </nav>
           </div>
+
+          {/* Center: Logo */}
+          <Link to="/" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <img
+              src={logo}
+              alt="Dapper Sainte"
+              className="h-8 md:h-9 w-auto object-contain"
+            />
+          </Link>
+
+          {/* Right: Search Only */}
+          <button
+            onClick={() => setIsSearchOpen(true)}
+            className={cn("p-2 -mr-2 transition-colors hover:opacity-70", textColor)}
+            aria-label="Search"
+          >
+            <Search className="w-6 h-6" strokeWidth={1.5} />
+          </button>
         </div>
       </motion.header>
 
       {/* Search Modal */}
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
-      {/* Side Menu (Mobile & Desktop Trigger) */}
+      {/* Side Menu (Drawer) */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
@@ -229,46 +163,147 @@ const Header = () => {
               onClick={() => setIsMobileMenuOpen(false)}
             />
             <motion.div
-              className="fixed inset-y-0 left-0 w-full max-w-sm bg-background border-r border-border z-50 p-6 shadow-2xl"
+              className="fixed inset-y-0 left-0 w-full max-w-[360px] bg-background border-r border-border z-50 flex flex-col shadow-2xl"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              onMouseLeave={() => setIsMobileMenuOpen(false)}
             >
-              <div className="flex items-center justify-between mb-8">
-                <img src={logo} alt="Dapper" className="h-6 w-auto" />
+              <div className="p-6 flex items-center justify-between border-b border-border">
+                <span className="text-sm font-bold tracking-widest uppercase text-muted-foreground">Menu</span>
                 <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-foreground hover:bg-muted rounded-full">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <nav>
-                <ul className="space-y-4">
-                  {navLinks.map((link, idx) => (
-                    <motion.li
-                      key={link.name}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.1 + idx * 0.05 }}
-                    >
+              <div className="flex-1 overflow-y-auto flex flex-col">
+                {/* Navigation Links */}
+                <nav className="p-8 space-y-8">
+                  <ul className="space-y-6" onMouseLeave={() => setActiveCollection(null)}>
+                    <li>
                       <Link
-                        to={link.href}
+                        to="/shop?collection=fw25"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="text-3xl font-display font-medium text-foreground hover:text-muted-foreground transition-colors block"
+                        onMouseEnter={() => setActiveCollection('fw25')}
+                        className="text-3xl font-bold uppercase tracking-tighter block hover:text-muted-foreground transition-colors"
                       >
-                        {link.name}
+                        F/W '25
                       </Link>
-                    </motion.li>
-                  ))}
-                </ul>
-              </nav>
+                    </li>
+                    <li>
+                      <Link
+                        to="/shop?collection=initial"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        onMouseEnter={() => setActiveCollection('initial')}
+                        className="text-3xl font-bold uppercase tracking-tighter block hover:text-muted-foreground transition-colors"
+                      >
+                        Initial
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/shop?collection=247"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        onMouseEnter={() => setActiveCollection('247')}
+                        className="text-3xl font-bold uppercase tracking-tighter block hover:text-muted-foreground transition-colors"
+                      >
+                        247
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/shop?collection=owners-club"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        onMouseEnter={() => setActiveCollection('owners-club')}
+                        className="text-3xl font-bold uppercase tracking-tighter block hover:text-muted-foreground transition-colors"
+                      >
+                        Owners Club
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/shop?collection=woman"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        onMouseEnter={() => setActiveCollection('woman')}
+                        className="text-3xl font-bold uppercase tracking-tighter block hover:text-muted-foreground transition-colors"
+                      >
+                        Woman
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/shop?collection=essentials"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        onMouseEnter={() => setActiveCollection('essentials')}
+                        className="text-2xl font-bold uppercase tracking-wider block text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        Essentials
+                      </Link>
+                    </li>
+                  </ul>
 
-              <div className="absolute bottom-8 left-6 right-6">
-                <button onClick={toggleTheme} className="flex items-center gap-2 text-sm text-foreground/70 hover:text-foreground">
-                  {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                  <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
-                </button>
+                  <div className="space-y-4 pt-8 border-t border-border">
+                    <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground block hover:text-foreground">About</Link>
+                    <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground block hover:text-foreground">Contact</Link>
+                  </div>
+                </nav>
               </div>
+
+              {/* Toolbar Icons in Footer */}
+              <div className="p-6 border-t border-border bg-muted/10">
+                <div className="flex items-center justify-between px-4">
+                  {/* Theme Toggle */}
+                  <button onClick={toggleTheme} className="hover:opacity-70 transition-opacity" aria-label="Toggle Theme">
+                    {theme === 'dark' ? <Sun className="w-6 h-6" strokeWidth={1.5} /> : <Moon className="w-6 h-6" strokeWidth={1.5} />}
+                  </button>
+
+                  {/* Notifications */}
+                  <button className="hover:opacity-70 transition-opacity relative" aria-label="Notifications">
+                    <Bell className="w-6 h-6" strokeWidth={1.5} />
+                  </button>
+
+                  {/* Wishlist */}
+                  <Link to="/wishlist" onClick={() => setIsMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity" aria-label="Wishlist">
+                    <Heart className="w-6 h-6" strokeWidth={1.5} />
+                  </Link>
+
+                  {/* Profile */}
+                  {user ? (
+                    <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity" aria-label="Profile">
+                      <User className="w-6 h-6" strokeWidth={1.5} />
+                    </Link>
+                  ) : (
+                    <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="hover:opacity-70 transition-opacity" aria-label="Login">
+                      <User className="w-6 h-6" strokeWidth={1.5} />
+                    </Link>
+                  )}
+
+                  {/* Cart */}
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setIsCartOpen(true);
+                    }}
+                    className="hover:opacity-70 transition-opacity relative"
+                    aria-label="Cart"
+                  >
+                    <ShoppingBag className="w-6 h-6" strokeWidth={1.5} />
+                    {totalItems > 0 && (
+                      <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 text-white text-[10px] font-bold flex items-center justify-center rounded-full">
+                        {totalItems}
+                      </span>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Collection Preview Panel */}
+              <AnimatePresence>
+                {activeCollection && (
+                  <MenuCollectionPreview collectionId={activeCollection} />
+                )}
+              </AnimatePresence>
             </motion.div>
           </>
         )}

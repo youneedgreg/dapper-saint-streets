@@ -33,7 +33,7 @@ const Newsletter = () => {
           </motion.p>
 
           <motion.h2
-            className="font-display text-3xl md:text-4xl font-medium tracking-tight mb-6"
+            className="text-5xl md:text-6xl lg:text-7xl mb-6 leading-none"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -62,20 +62,19 @@ const Newsletter = () => {
           >
             <Input
               type="email"
-              placeholder="Enter your email"
+              placeholder="ENTER YOUR EMAIL"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 h-12 bg-transparent border-background/30 text-background placeholder:text-background/40 focus:border-background"
+              className="flex-1 h-12 bg-transparent border-2 border-background/30 text-background placeholder:text-background/40 focus:border-background rounded-none uppercase text-xs tracking-widest"
               required
             />
             <Button
               type="submit"
               size="lg"
-              className="h-12 px-8 bg-background text-foreground hover:bg-background/90 text-xs tracking-[0.15em] uppercase"
+              className="h-12 px-12 bg-background text-foreground hover:bg-background/90 text-xs tracking-[0.2em] uppercase font-bold rounded-none"
               disabled={isSubmitted}
             >
-              {isSubmitted ? 'Subscribed' : 'Subscribe'}
-              {!isSubmitted && <ArrowRight className="w-4 h-4 ml-2" strokeWidth={1.5} />}
+              {isSubmitted ? 'Subscribed' : 'Sign Up →'}
             </Button>
           </motion.form>
         </div>

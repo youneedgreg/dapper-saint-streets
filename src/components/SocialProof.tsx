@@ -18,7 +18,7 @@ const SocialProof = () => {
           viewport={{ once: true }}
         >
           <span className="text-xs text-muted-foreground tracking-[0.2em] uppercase w-full text-center mb-4">
-            Official Patners With
+            Official Partners With
           </span>
           {pressLogos.map((logo, index) => (
             <motion.span

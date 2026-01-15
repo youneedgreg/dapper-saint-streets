@@ -4,11 +4,12 @@ import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
 import LoadingScreen from '@/components/LoadingScreen';
 import HeroSection from '@/components/HeroSection';
+import ExploreCollections from '@/components/ExploreCollections';
+
 import FeaturedProducts from '@/components/FeaturedProducts';
-import CollectionBanner from '@/components/CollectionBanner';
-import LookbookSection from '@/components/LookbookSection';
-import SocialProof from '@/components/SocialProof';
 import Newsletter from '@/components/Newsletter';
+
+
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -31,10 +32,9 @@ const Index = () => {
       <CartDrawer />
       <main>
         <HeroSection />
+        <ExploreCollections />
+
         <FeaturedProducts />
-        <CollectionBanner />
-        <LookbookSection />
-        <SocialProof />
         <Newsletter />
       </main>
       <Footer />

@@ -56,7 +56,7 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
         >
           {/* Backdrop */}
           <motion.div
-            className="absolute inset-0 bg-background/98"
+            className="absolute inset-0 bg-background/20 backdrop-blur-sm"
             onClick={onClose}
           />
 
@@ -87,7 +87,7 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                     placeholder="Search"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    className="flex-1 bg-transparent text-2xl md:text-3xl font-display outline-none placeholder:text-muted-foreground/50"
+                    className="flex-1 bg-transparent text-foreground text-2xl md:text-3xl font-display outline-none placeholder:text-muted-foreground/50"
                   />
                 </div>
               </div>

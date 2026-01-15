@@ -56,11 +56,11 @@ const Footer = () => {
           {/* Links Grid */}
           <div className="col-span-1 md:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-8">
             <div>
-              <h4 className="font-display text-sm tracking-wider uppercase mb-6 text-foreground">Shop</h4>
+              <h4 className="text-sm font-bold tracking-[0.2em] uppercase mb-6 text-foreground">Shop</h4>
               <ul className="space-y-4">
                 {['New Arrivals', 'Hoodies', 'T-Shirts', 'Accessories'].map(item => (
                   <li key={item}>
-                    <Link to="/shop" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    <Link to="/shop" className="text-sm text-muted-foreground hover:text-foreground transition-colors line-reveal">
                       {item}
                     </Link>
                   </li>
@@ -68,7 +68,7 @@ const Footer = () => {
               </ul>
             </div>
             <div>
-              <h4 className="font-display text-sm tracking-wider uppercase mb-6 text-foreground">Company</h4>
+              <h4 className="text-sm font-bold tracking-[0.2em] uppercase mb-6 text-foreground">Company</h4>
               <ul className="space-y-4">
                 {[
                   { name: 'About', href: '/about' },
@@ -76,7 +76,7 @@ const Footer = () => {
                   { name: 'Lookbook', href: '/lookbook' },
                 ].map(item => (
                   <li key={item.name}>
-                    <Link to={item.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    <Link to={item.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors line-reveal">
                       {item.name}
                     </Link>
                   </li>
@@ -84,11 +84,11 @@ const Footer = () => {
               </ul>
             </div>
             <div>
-              <h4 className="font-display text-sm tracking-wider uppercase mb-6 text-foreground">Support</h4>
+              <h4 className="text-sm font-bold tracking-[0.2em] uppercase mb-6 text-foreground">Support</h4>
               <ul className="space-y-4">
                 {['Shipping', 'Returns', 'Size Guide', 'FAQ'].map(item => (
                   <li key={item}>
-                    <Link to="/faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    <Link to="/faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors line-reveal">
                       {item}
                     </Link>
                   </li>

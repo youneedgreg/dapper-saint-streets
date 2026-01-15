@@ -19,6 +19,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { LayoutGrid, Layers, Columns } from "lucide-react";
 
 type SortOption = 'newest' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
 
@@ -56,32 +58,32 @@ const FilterContent = ({
       <h3 className="font-semibold mb-3">Filters</h3>
       <div className="space-y-3">
         <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="sale" 
+          <Checkbox
+            id="sale"
             checked={showOnSale}
             onCheckedChange={(checked) => setShowOnSale(checked as boolean)}
           />
           <Label htmlFor="sale" className="text-sm cursor-pointer">On Sale</Label>
         </div>
         <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="new" 
+          <Checkbox
+            id="new"
             checked={showNew}
             onCheckedChange={(checked) => setShowNew(checked as boolean)}
           />
           <Label htmlFor="new" className="text-sm cursor-pointer">New Arrivals</Label>
         </div>
         <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="bestseller" 
+          <Checkbox
+            id="bestseller"
             checked={showBestSellers}
             onCheckedChange={(checked) => setShowBestSellers(checked as boolean)}
           />
           <Label htmlFor="bestseller" className="text-sm cursor-pointer">Best Sellers</Label>
         </div>
         <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="featured" 
+          <Checkbox
+            id="featured"
             checked={showFeatured}
             onCheckedChange={(checked) => setShowFeatured(checked as boolean)}
           />
@@ -122,9 +124,9 @@ const FilterContent = ({
     </div>
 
     {activeFiltersCount > 0 && (
-      <Button 
-        variant="outline" 
-        size="sm" 
+      <Button
+        variant="outline"
+        size="sm"
         onClick={clearFilters}
         className="w-full"
       >
@@ -145,13 +147,15 @@ const Shop = () => {
   const [showBestSellers, setShowBestSellers] = useState(false);
   const [showFeatured, setShowFeatured] = useState(featuredFromUrl);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  
+  const [isModelView, setIsModelView] = useState(true);
+
   useEffect(() => {
     setSelectedCategory(categoryFromUrl);
     setShowFeatured(featuredFromUrl);
   }, [categoryFromUrl, featuredFromUrl]);
-  
+
   const handleCategoryChange = (cat: string) => {
     setSelectedCategory(cat);
     if (cat === 'All') {
@@ -171,10 +175,10 @@ const Shop = () => {
   };
 
   const activeFiltersCount = [showOnSale, showNew, showBestSellers, showFeatured].filter(Boolean).length;
-  
+
   // Apply filters
-  let filtered = selectedCategory === 'All' 
-    ? [...products] 
+  let filtered = selectedCategory === 'All'
+    ? [...products]
     : products.filter(p => p.category === selectedCategory);
 
   // Filter by sale
@@ -225,84 +229,77 @@ const Shop = () => {
       <CartDrawer />
       <main className="pt-24 md:pt-28 pb-16">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">Shop All</h1>
-            <p className="text-muted-foreground">Discover our complete collection</p>
-          </div>
-
-          {/* Categories */}
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
-            {categories.map(cat => (
-              <button
-                key={cat}
-                onClick={() => handleCategoryChange(cat)}
-                className={cn(
-                  "px-4 py-2 text-sm rounded-full transition-colors",
-                  selectedCategory === cat ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground hover:bg-secondary/80"
-                )}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
-          {/* Filters and Sort Bar */}
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-8 pb-4 border-b">
-            <div className="flex items-center gap-4">
-              {/* Filter Button */}
-              <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Filter className="h-4 w-4 mr-2" />
-                    Filters
-                    {activeFiltersCount > 0 && (
-                      <span className="ml-2 px-2 py-0.5 text-xs bg-primary text-primary-foreground rounded-full">
-                        {activeFiltersCount}
-                      </span>
-                    )}
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="w-80">
-                  <SheetHeader>
-                    <SheetTitle>Filters</SheetTitle>
-                  </SheetHeader>
-                  <div className="mt-6">
-                    <FilterContent
-                      showOnSale={showOnSale}
-                      setShowOnSale={setShowOnSale}
-                      showNew={showNew}
-                      setShowNew={setShowNew}
-                      showBestSellers={showBestSellers}
-                      setShowBestSellers={setShowBestSellers}
-                      showFeatured={showFeatured}
-                      setShowFeatured={setShowFeatured}
-                      priceRange={priceRange}
-                      setPriceRange={setPriceRange}
-                      activeFiltersCount={activeFiltersCount}
-                      clearFilters={clearFilters}
-                    />
-                  </div>
-                </SheetContent>
-              </Sheet>
+          {/* New Header Layout */}
+          <div className="flex flex-col mb-8">
+            <div className="flex items-baseline gap-2 mb-4">
+              <h1 className="font-bold text-2xl uppercase tracking-wide">
+                {selectedCategory === 'All' ? 'New Arrivals' : selectedCategory}
+              </h1>
+              <span className="text-muted-foreground text-sm font-medium pt-1">
+                {filtered.length}
+              </span>
             </div>
 
-            {/* Sort and Results */}
-            <div className="flex items-center gap-4 w-full sm:w-auto">
-              <div className="text-sm text-muted-foreground">
-                {filtered.length} {filtered.length === 1 ? 'product' : 'products'}
+            <div className="max-w-4xl mb-8">
+              <p className="text-sm text-foreground/80 leading-relaxed max-w-2xl">
+                Discover the latest menswear arrivals from Dapper Saint. Explore new pieces from our Fall Winter '25 Mainline Collection, FW247 performance pieces, and the latest collaborations. From everyday staples to statement silhouettes, each arrival is crafted with signature detail and precision. <span className="underline cursor-pointer">read more</span>
+              </p>
+            </div>
+
+            {/* Controls Bar */}
+            <div className="flex flex-wrap items-center justify-between border-t border-b border-border py-4 bg-background sticky top-[72px] z-30">
+              <div className="flex items-center gap-6">
+                {/* View Toggles (Visual only for now) */}
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <span className="text-xs font-bold uppercase tracking-widest text-foreground mr-2">View</span>
+                  <button className="hover:text-foreground transition-colors"><Columns className="w-5 h-5 rotate-90" strokeWidth={1.5} /></button>
+                  <button className="text-foreground"><LayoutGrid className="w-5 h-5" strokeWidth={1.5} /></button>
+                </div>
+
+                {/* Model Toggle */}
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-bold uppercase tracking-widest text-foreground">Model</span>
+                  <Switch
+                    checked={isModelView}
+                    onCheckedChange={setIsModelView}
+                    className="data-[state=checked]:bg-black"
+                  />
+                </div>
               </div>
-              <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="newest">Newest</SelectItem>
-                  <SelectItem value="price-asc">Price: Low to High</SelectItem>
-                  <SelectItem value="price-desc">Price: High to Low</SelectItem>
-                  <SelectItem value="name-asc">Name: A to Z</SelectItem>
-                  <SelectItem value="name-desc">Name: Z to A</SelectItem>
-                </SelectContent>
-              </Select>
+
+              <div className="flex items-center gap-4">
+                {/* Filter Trigger */}
+                <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
+                  <SheetTrigger asChild>
+                    <button className="flex items-center gap-2 hover:opacity-70 transition-opacity">
+                      <span className="text-xs font-bold uppercase tracking-widest">Filter</span>
+                      <Filter className="h-4 w-4" />
+                    </button>
+                  </SheetTrigger>
+                  {/* ... Sheet Content Content ... */}
+                  <SheetContent side="right" className="w-[400px]">
+                    <SheetHeader>
+                      <SheetTitle className="uppercase tracking-widest text-left border-b border-border pb-4">Filter</SheetTitle>
+                    </SheetHeader>
+                    <div className="mt-6">
+                      <FilterContent
+                        showOnSale={showOnSale}
+                        setShowOnSale={setShowOnSale}
+                        showNew={showNew}
+                        setShowNew={setShowNew}
+                        showBestSellers={showBestSellers}
+                        setShowBestSellers={setShowBestSellers}
+                        showFeatured={showFeatured}
+                        setShowFeatured={setShowFeatured}
+                        priceRange={priceRange}
+                        setPriceRange={setPriceRange}
+                        activeFiltersCount={activeFiltersCount}
+                        clearFilters={clearFilters}
+                      />
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
             </div>
           </div>
 
@@ -346,8 +343,8 @@ const Shop = () => {
 
           {/* Products Grid */}
           {filtered.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-              {filtered.map((product, i) => <ProductCard key={product.id} product={product} index={i} />)}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-12">
+              {filtered.map((product, i) => <ProductCard key={product.id} product={product} index={i} isModelView={isModelView} />)}
             </div>
           ) : (
             <div className="text-center py-16">
