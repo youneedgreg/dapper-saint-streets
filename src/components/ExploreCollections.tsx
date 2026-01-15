@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 
 const collections = [
     {
-        name: "Fall Winter '25",
+        name: "THE PRELUDE",
         image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1920&auto=format&fit=crop',
         link: '/shop?collection=fw25'
     },

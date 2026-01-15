@@ -188,7 +188,7 @@ const Header = () => {
                         onMouseEnter={() => setActiveCollection('fw25')}
                         className="text-3xl font-bold uppercase tracking-tighter block hover:text-muted-foreground transition-colors"
                       >
-                        F/W '25
+                        THE PRELUDE
                       </Link>
                     </li>
                     <li>
